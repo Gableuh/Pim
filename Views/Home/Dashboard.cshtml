@@ -1,0 +1,44 @@
+﻿@model List<ProjetoTi.Models.Chamado>
+@{
+    ViewData["Title"] = "Dashboard";
+    var usuarioNome = TempData["UsuarioNome"]?.ToString();
+}
+
+<h2>Bem-vindo, @usuarioNome!</h2>
+
+<a href="/Home/CriarChamado">Criar Novo Chamado</a>
+
+<table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Id</td>
+                <td>@c.Titulo</td>
+                <td>@c.Descricao</td>
+                <td>@c.Status</td>
+                <td>@c.DataCriacao.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>
+                    @if (c.Status != "Fechado")
+                    {
+                        <a href="/Home/FecharChamado?id=@c.Id">Fechar</a>
+                    }
+                    else
+                    {
+                        <span>Fechado</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

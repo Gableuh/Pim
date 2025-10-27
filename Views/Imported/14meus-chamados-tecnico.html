@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Chamados - Técnico</title>
+<style>
+:root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --accent:#2563eb;
+    --success:#10b981;
+    --danger:#ef4444;
+    --shadow:0 6px 18px rgba(16,24,40,0.06);
+    --radius:12px;
+}
+
+/* Reset básico */
+body,html{
+    margin:0;
+    padding:0;
+    height:100%;
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* Layout principal */
+.app{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  height:100vh;
+  gap:24px;
+  position:relative;
+}
+
+/* Sidebar Técnico */
+.sidebar{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.brand{
+  display:flex; gap:12px; align-items:center; margin-bottom:18px;
+}
+.brand .logo{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;
+}
+.brand h1{font-size:16px;margin:0;}
+.nav{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.nav button{
+  background:transparent;border:0;padding:10px 12px;border-radius:10px;
+  display:flex;align-items:center;gap:10px;color:var(--text);cursor:pointer;font-size:15px;
+}
+.nav button .ico{width:30px;text-align:center;font-size:18px;}
+.nav button:hover{background:rgba(99,102,241,0.06);}
+.nav button.active{background:rgba(37,99,235,0.12);color:var(--accent);}
+
+/* Seção Atalhos */
+.sidebar-title{
+  font-size:13px;
+  color:var(--muted);
+  opacity:0.7;
+  margin-top:12px;
+  margin-bottom:4px;
+  font-weight:600;
+}
+.sidebar-shortcuts{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center; 
+}
+.nav-item.secondary{
+  background:transparent;
+  color:var(--accent);
+  border:1px solid rgba(37,99,235,0.12);
+  padding:10px 12px;
+  border-radius:10px;
+  cursor:pointer;
+  text-align:center;
+  width:80%;
+}
+.nav-item.secondary:hover{
+  background:rgba(37,99,235,0.12);
+}
+
+/* Footer da sidebar */
+.footer{font-size:13px;color:var(--muted);margin-top:auto;text-align:center;}
+
+/* Conteúdo principal */
+.main{
+  padding:24px;
+  overflow-y:auto;
+  position:relative;
+}
+
+/* Botões fixos no topo */
+.top-buttons{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:12px;
+}
+button.fixed{
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    background:var(--accent);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+}
+
+/* Card do Chamado */
+.card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+.card h4{margin:0; color:var(--text);}
+.card p{margin:0; color:var(--muted); font-size:13px;}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;}
+.badge.urgente{background:rgba(239,68,68,0.12);color:var(--danger);}
+.badge.alta{background:rgba(249,115,22,0.12);color:#f59e0b;}
+.badge.media{background:rgba(250,204,21,0.12);color:#facc15;}
+.badge.baixa{background:rgba(16,185,129,0.12);color:var(--success);}
+
+/* Botões do card */
+.card .buttons{
+    display:flex;
+    gap:8px;
+    margin-top:8px;
+}
+.card .btn{
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    color:#fff;
+}
+.card .btn.view{background:var(--accent);}
+.card .btn.finish{background:var(--danger);}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar Técnico -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">🛠️</div>
+      <div>
+        <h1>SuporteTI IA</h1>
+        <div style="font-size:13px;color:var(--muted)">Painel Técnico</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button><span class="ico">📋</span> Chamados Abertos</button>
+      <button class="active"><span class="ico">🗂️</span> Meus Chamados</button>
+    </nav>
+
+    <!-- Seção Atalhos -->
+    <div class="sidebar-title">Atalhos</div>
+    <div class="sidebar-shortcuts">
+      <button class="nav-item secondary" id="logoutBtn">Sair</button>
+      <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
+    </div>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <main class="main">
+      <div class="top-buttons">
+          <button class="fixed">← Voltar</button>
+          <button class="fixed" id="logoutTop">🚫 Desconectar</button>
+      </div>
+
+      <h2>Meus Chamados</h2>
+      <p style="color:var(--muted);margin-bottom:12px;">Chamados que você está atendendo</p>
+
+      <!-- Chamado 1 -->
+      <div class="card">
+        <h4>Sistema travando ao abrir Excel</h4>
+        <p>Aberto em: 14/10/2025 08:30 | Setor: TI / Software | Colaborador: Arthur | Atribuído: —</p>
+        <span class="badge urgente">Urgente</span>
+        <div class="buttons">
+          <button class="btn view">Ver</button>
+          <button class="btn finish">Finalizar</button>
+        </div>
+      </div>
+
+      <!-- Chamado 2 -->
+      <div class="card">
+        <h4>Erro no sistema financeiro</h4>
+        <p>Aberto em: 13/10/2025 14:45 | Setor: Financeiro / Aplicação | Colaborador: Marina | Atribuído: João</p>
+        <span class="badge alta">Alta</span>
+        <div class="buttons">
+          <button class="btn view">Ver</button>
+          <button class="btn finish">Finalizar</button>
+        </div>
+      </div>
+
+      <!-- Chamado 3 -->
+      <div class="card">
+        <h4>Falha no login do colaborador</h4>
+        <p>Aberto em: 12/10/2025 10:15 | Setor: RH / Sistema | Colaborador: Lucas | Atribuído: Maria</p>
+        <span class="badge media">Média</span>
+        <div class="buttons">
+          <button class="btn view">Ver</button>
+          <button class="btn finish">Finalizar</button>
+        </div>
+      </div>
+  </main>
+</div>
+
+<script>
+  // Logout lateral
+  document.getElementById('logoutBtn').addEventListener('click', ()=>alert('Logout (simulado)'));
+  
+  // Logout superior
+  document.getElementById('logoutTop').addEventListener('click', ()=>alert('Logout (simulado)'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sucesso — Chamado Finalizado</title>
+<style>
+:root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --text:#111827;
+    --accent:#2563eb;
+    --success:#10b981;
+    --shadow:0 6px 18px rgba(16,24,40,0.06);
+    --radius:12px;
+}
+body,html{
+    margin:0;padding:0;height:100%;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;
+}
+.container{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;gap:20px;padding:16px;
+}
+.alert{
+    background:var(--success);
+    color:white;
+    padding:20px 30px;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    font-size:18px;
+    text-align:center;
+}
+button{
+    padding:10px 20px;
+    border:none;
+    border-radius:var(--radius);
+    background:var(--accent);
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+}
+button:hover{opacity:0.9;}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="alert">✅ Chamado aberto com sucesso!</div>
+    <button onclick="window.location.href='dashboard.html'">← Voltar ao Dashboard</button>
+</div>
+</body>
+</html>

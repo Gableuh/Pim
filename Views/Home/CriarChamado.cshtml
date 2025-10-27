@@ -1,0 +1,17 @@
+﻿@{
+    ViewData["Title"] = "Criar Chamado";
+}
+
+<h2>Criar Novo Chamado</h2>
+
+<form method="post">
+    <label>Título:</label><br />
+    <input type="text" name="titulo" required /><br /><br />
+
+    <label>Descrição:</label><br />
+    <textarea name="descricao" rows="5" cols="50" required></textarea><br /><br />
+
+    <button type="submit">Criar</button>
+</form>
+
+<a href="/Home/Dashboard">Voltar para Dashboard</a>

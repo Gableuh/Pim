@@ -6,37 +6,57 @@ namespace ProjetoTi.Controllers
 {
     public class LoginController : Controller
     {
-        private UsuarioRepository _repo = new UsuarioRepository();
+        private readonly UsuarioRepository _repo = new UsuarioRepository();
 
         [HttpGet]
-        public IActionResult Index() => View();
-
-        [HttpPost]
-        public IActionResult Index(string email, string senha)
+        public IActionResult Index()
         {
-            var usuario = _repo.Autenticar(email, senha);
-            if (usuario != null)
-            {
-                // Armazena o Id como string na sessão
-                HttpContext.Session.SetString("UsuarioId", usuario.Id.ToString());
-                HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
-
-                return RedirectToAction("Dashboard", "Home");
-            }
-
-            TempData["Erro"] = "Email ou senha inválidos.";
             return View();
         }
 
-        // Método auxiliar para recuperar o Id do usuário da sessão
-        private Guid? GetUsuarioId()
+        [HttpPost]
+        public IActionResult Index(string email, string password, string role)
         {
-            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
-            if (Guid.TryParse(usuarioIdStr, out Guid usuarioId))
+            try
             {
-                return usuarioId;
+                // Validação básica
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
+                {
+                    ViewBag.MensagemErro = "Todos os campos devem estar preenchidos.";
+                    return View();
+                }
+
+                // Autentica usuário
+                var usuario = _repo.Autenticar(email, password);
+
+                if (usuario == null)
+                {
+                    ViewBag.MensagemErro = "Usuário ou senha inválidos.";
+                    return View();
+                }
+
+                // Verifica se o papel do usuário bate com o selecionado no login
+                if (!string.Equals(usuario.Papel, role, StringComparison.OrdinalIgnoreCase))
+                {
+                    ViewBag.MensagemErro = "Email cadastrado já tem um login diferente.";
+                    return View();
+                }
+
+                // Redireciona conforme papel
+                if (usuario.Papel.ToLower() == "tecnico")
+                {
+                    return RedirectToAction("Index", "DashboardTecnico");
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Dashboard");
+                }
             }
-            return null;
+            catch (Exception ex)
+            {
+                ViewBag.MensagemErro = "Erro inesperado: " + ex.Message;
+                return View();
+            }
         }
     }
 }

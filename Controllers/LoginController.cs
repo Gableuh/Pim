@@ -6,37 +6,48 @@ namespace ProjetoTi.Controllers
 {
     public class LoginController : Controller
     {
-        private UsuarioRepository _repo = new UsuarioRepository();
+        private readonly UsuarioRepository _repo = new UsuarioRepository();
 
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            return View();
+        }
 
         [HttpPost]
         public IActionResult Index(string email, string senha)
         {
-            var usuario = _repo.Autenticar(email, senha);
-            if (usuario != null)
+            try
             {
-                // Armazena o Id como string na sessão
-                HttpContext.Session.SetString("UsuarioId", usuario.Id.ToString());
-                HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
+                // tenta autenticar
+                var usuario = _repo.Autenticar(email, senha);
 
-                return RedirectToAction("Dashboard", "Home");
+                if (usuario == null)
+                {
+                    ViewBag.MensagemErro = "Usuário ou senha inválidos.";
+                    return View();
+                }
+
+                if (usuario.Papel == "tecnico")
+                {
+                    //return View();
+                }
+               
+                // se der certo, redireciona para dashboard (ou home)
+                return RedirectToAction("Index", "Dashboard");
             }
-
-            TempData["Erro"] = "Email ou senha inválidos.";
-            return View();
-        }
-
-        // Método auxiliar para recuperar o Id do usuário da sessão
-        private Guid? GetUsuarioId()
-        {
-            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
-            if (Guid.TryParse(usuarioIdStr, out Guid usuarioId))
+            catch (ArgumentException ex)
             {
-                return usuarioId;
+                // erro da validação: email/senha vazios
+                ViewBag.MensagemErro = ex.Message;
+                return View();
             }
-            return null;
+            catch (Exception ex)
+            {
+                // outros erros (ex: conexão)
+                ViewBag.MensagemErro = "Erro inesperado: " + ex.Message;
+                return View();
+            }
         }
     }
 }

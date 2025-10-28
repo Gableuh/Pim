@@ -1,20 +1,13 @@
 ﻿@{
-    Layout = null;
-    <!-- remove layout compartilhado pra manter a tela isolada -->
+    Layout = null; // Tela isolada, sem layout compartilhado
 }
 
-@if (TempData["Erro"] != null)
-{
-    <div style="color:red">@TempData["Erro"]</div>
-}
- 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SuporteTI IA — Login</title>
-
     <style>
         :root {
             --bg: #f6f8fb;
@@ -109,14 +102,6 @@
             box-sizing: border-box;
         }
 
-            input[type="password"]::-ms-reveal,
-            input[type="password"]::-ms-clear,
-            input[type="password"]::-webkit-contacts-auto-fill-button,
-            input[type="password"]::-webkit-password-toggle-button {
-                display: none !important;
-                -webkit-appearance: none;
-            }
-
         .password-wrapper {
             display: flex;
             width: 100%;
@@ -198,14 +183,15 @@
             </header>
 
             <section class="card-body">
-                <!-- 🔹 ALTERADO: form agora envia pro Controller MVC -->
                 <form asp-controller="Login" asp-action="Index" method="post" novalidate>
                     <label for="email">E-mail</label>
+                    <!-- name ajustado para bater com o parâmetro do controller -->
                     <input id="email" name="email" type="email" placeholder="seu@exemplo.com" required>
 
-                    <label for="password">Senha</label>
+                    <label for="senha">Senha</label>
                     <div class="password-wrapper">
-                        <input id="password" name="password" type="password" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+                        <!-- name ajustado para bater com o parâmetro do controller -->
+                        <input id="senha" name="senha" type="password" placeholder="••••••••" required minlength="6" autocomplete="new-password">
                         <button type="button" id="togglePassword" aria-label="Mostrar senha">👁️</button>
                     </div>
 
@@ -223,10 +209,19 @@
                         <a class="link" href="/RecuperarSenha">Esqueci a senha</a>
                     </div>
 
-                    <!-- 🔹 Mostra mensagem de erro do servidor -->
-                    @if (ViewBag.Erro != null)
+                    <!-- 🔹 Mensagens de erro -->
+                    @if (TempData["Erro"] != null)
                     {
-                        <p style="color:red; text-align:center;">@ViewBag.Erro</p>
+                        <div style="color:red; text-align:center; margin-bottom:10px;">
+                            @TempData["Erro"]
+                        </div>
+                    }
+
+                    @if (ViewBag.MensagemErro != null)
+                    {
+                        <div style="color:red; text-align:center; margin-bottom:10px;">
+                            @ViewBag.MensagemErro
+                        </div>
                     }
 
                     <button class="btn primary" type="submit">Entrar</button>
@@ -248,7 +243,7 @@
 
     <script>
         const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
+        const passwordInput = document.getElementById('senha');
         togglePassword.addEventListener('click', () => {
             passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         });

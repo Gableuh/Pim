@@ -10,13 +10,17 @@ namespace ProjetoTi.Data
         // 🔹 Autentica usuário
         public Usuario? Autenticar(string email, string senha)
         {
+            // ✅ Validação antes de conectar
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
+                throw new ArgumentException("Email e senha não podem ser vazios.");
+
             using var conn = new NpgsqlConnection(connectionString);
             conn.Open();
 
             using var cmd = new NpgsqlCommand(
                 "SELECT id, nome, email, senha, papel, criado_em FROM usuarios WHERE email=@e AND senha=@s", conn);
-            cmd.Parameters.AddWithValue("e", email);
-            cmd.Parameters.AddWithValue("s", senha);
+            cmd.Parameters.AddWithValue("@e", email);
+            cmd.Parameters.AddWithValue("@s", senha);
 
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
@@ -30,10 +34,11 @@ namespace ProjetoTi.Data
                     Papel = reader.GetString(reader.GetOrdinal("papel"))
                 };
             }
-            return null;
+
+            return null; // se não encontrar usuário
         }
 
-        // 🔹 Cria usuário novo (usado no cadastro)
+        // 🔹 Cria usuário novo
         public bool CriarUsuario(Usuario usuario)
         {
             using var conn = new NpgsqlConnection(connectionString);
@@ -41,10 +46,10 @@ namespace ProjetoTi.Data
 
             using var cmd = new NpgsqlCommand(
                 "INSERT INTO usuarios (nome, email, senha, papel, criado_em) VALUES (@n, @e, @s, @p, NOW())", conn);
-            cmd.Parameters.AddWithValue("n", usuario.Nome);
-            cmd.Parameters.AddWithValue("e", usuario.Email);
-            cmd.Parameters.AddWithValue("s", usuario.Senha);
-            cmd.Parameters.AddWithValue("p", usuario.Papel);
+            cmd.Parameters.AddWithValue("@n", usuario.Nome);
+            cmd.Parameters.AddWithValue("@e", usuario.Email);
+            cmd.Parameters.AddWithValue("@s", usuario.Senha);
+            cmd.Parameters.AddWithValue("@p", usuario.Papel);
 
             try
             {
@@ -65,16 +70,16 @@ namespace ProjetoTi.Data
             conn.Open();
 
             using var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM usuarios WHERE email=@e", conn);
-            checkCmd.Parameters.AddWithValue("e", "gabriel@teste.com");
+            checkCmd.Parameters.AddWithValue("@e", "gabriel@teste.com");
             long count = (long)checkCmd.ExecuteScalar()!;
             if (count > 0) return;
 
             using var insertCmd = new NpgsqlCommand(
                 "INSERT INTO usuarios (nome, email, senha, papel, criado_em) VALUES (@n, @e, @s, @p, NOW())", conn);
-            insertCmd.Parameters.AddWithValue("n", "Gabriel Santos");
-            insertCmd.Parameters.AddWithValue("e", "gabriel@teste.com");
-            insertCmd.Parameters.AddWithValue("s", "123456");
-            insertCmd.Parameters.AddWithValue("p", "colaborador");
+            insertCmd.Parameters.AddWithValue("@n", "Gabriel Santos");
+            insertCmd.Parameters.AddWithValue("@e", "gabriel@teste.com");
+            insertCmd.Parameters.AddWithValue("@s", "123456");
+            insertCmd.Parameters.AddWithValue("@p", "colaborador");
             insertCmd.ExecuteNonQuery();
         }
     }

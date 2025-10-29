@@ -1,5 +1,4 @@
-﻿//1
-using ProjetoTi.Data;              // Acesso ao repositório de usuários
+﻿using ProjetoTi.Data;              // Acesso ao repositório de usuários
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

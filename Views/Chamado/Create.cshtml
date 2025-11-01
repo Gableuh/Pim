@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Abrir Chamado";
+    Layout = null; // se tiver _Layout troque para "_Layout"
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@ViewData["Title"] — SuporteTI IA</title>
+    <link rel="stylesheet" href="~/css/dashboard-usuario.css" /> <!-- opcional: mover CSS para wwwroot -->
+</head>
+<body>
+    <button class="fixed voltar" onclick="history.back()">← Voltar</button>
+    <button class="fixed desconectar" onclick="location.href='@Url.Action("Logout", "Login")'">🚫 Desconectar</button>
+
+    <div class="app">
+        <aside class="sidebar panel">
+            <div class="brand">
+                <div class="logo">👤</div>
+                <div>
+                    <h1>SuporteTI IA</h1>
+                    <div class="muted">Painel do Usuário</div>
+                </div>
+            </div>
+
+            <nav class="nav" role="navigation">
+                <button class="nav-item"><span class="ico">📋</span> Lista de Chamados</button>
+                <button class="nav-item active"><span class="ico">✚</span> Abrir Chamado</button>
+                <button class="nav-item"><span class="ico">🗂️</span> Meus Chamados</button>
+            </nav>
+
+            <div class="sidebar-title">Atalhos</div>
+            <div class="sidebar-shortcuts">
+                <button class="nav-item secondary" id="logoutBtn">Sair</button>
+                <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <section class="panel">
+                <h3>Abrir Chamado</h3>
+                <p class="muted">Preencha os campos abaixo para abrir um novo chamado.</p>
+                <div class="card">
+                    @if (ViewBag.MensagemErro != null)
+                    {
+                        <div style="color:red">@ViewBag.MensagemErro</div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <label>Assunto</label>
+                        <input name="Titulo" type="text" placeholder="Digite o assunto do chamado" required />
+
+                        <label>Setor</label>
+                        <select name="Setor">
+                            <option>TI / Software</option>
+                            <option>Financeiro / Aplicação</option>
+                            <option>RH / Atendimento</option>
+                        </select>
+
+                        <label>Prioridade</label>
+                        <select name="Prioridade">
+                            <option>Baixa</option>
+                            <option>Média</option>
+                            <option>Alta</option>
+                            <option>Urgente</option>
+                        </select>
+
+                        <label>Colaborador</label>
+                        <input name="Colaborador" type="text" placeholder="Nome do colaborador" />
+
+                        <label>Descrição</label>
+                        <textarea name="Descricao" placeholder="Digite a descrição ou motivo da abertura do chamado"></textarea>
+
+                        <button class="btn-fixed" type="submit">Abrir Chamado</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('logoutBtn')?.addEventListener('click', ()=>{ location.href='@Url.Action("Logout", "Login")'; });
+    </script>
+</body>
+</html>

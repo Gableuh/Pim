@@ -20,7 +20,6 @@ namespace ProjetoTi.Controllers
             return View(chamados);
         }
 
-
         // Criar chamado
         [HttpGet]
         public IActionResult CriarChamado()
@@ -31,18 +30,19 @@ namespace ProjetoTi.Controllers
         [HttpPost]
         public IActionResult CriarChamado(string titulo, string descricao)
         {
-            if (TempData["UsuarioId"] == null)
+            var usuarioIdObj = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioIdObj == null)
                 return RedirectToAction("Index", "Login");
 
-            int usuarioId = (int)TempData["UsuarioId"];
+            int usuarioId = usuarioIdObj.Value;
 
             var chamado = new Chamado
             {
                 Titulo = titulo,
                 Descricao = descricao,
                 Status = "Aberto",
-                UsuarioId = usuarioId,
-                DataCriacao = DateTime.Now
+                IdUsuario = usuarioId,
+                DataAbertura = DateTime.Now
             };
 
             _chamadoRepo.CriarChamado(chamado);

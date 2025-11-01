@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ProjetoTi.Data;
 using ProjetoTi.Models;
 
@@ -42,21 +43,29 @@ namespace ProjetoTi.Controllers
                     return View();
                 }
 
-                // Redireciona conforme papel
+                // ✅ Salva dados do usuário na sessão
+                HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
+                HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
+                HttpContext.Session.SetString("UsuarioPapel", usuario.Papel);
+
+                // ✅ Redireciona conforme o papel
                 if (usuario.Papel.ToLower() == "tecnico")
-                {
                     return RedirectToAction("Index", "DashboardTecnico");
-                }
                 else
-                {
                     return RedirectToAction("Index", "Dashboard");
-                }
             }
             catch (Exception ex)
             {
                 ViewBag.MensagemErro = "Erro inesperado: " + ex.Message;
                 return View();
             }
+        }
+
+        // ✅ Logout - limpa a sessão e volta pro login
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Login");
         }
     }
 }

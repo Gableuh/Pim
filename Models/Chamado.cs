@@ -1,12 +1,16 @@
-﻿namespace ProjetoTi.Models
+﻿using System;
+
+namespace ProjetoTi.Models
 {
     public class Chamado
     {
-        public int Id { get; set; }
+        public int Id { get; set; }  // antes era Guid
+        public int IdUsuario { get; set; }  // antes era Guid
+        public int? IdTecnico { get; set; } // antes era Guid?
         public string Titulo { get; set; } = string.Empty;
         public string Descricao { get; set; } = string.Empty;
-        public string Status { get; set; } = "Aberto"; // Aberto, Em andamento, Fechado
-        public int UsuarioId { get; set; }
-        public DateTime DataCriacao { get; set; } = DateTime.Now;
+        public string Status { get; set; } = "aberto";
+        public DateTime DataAbertura { get; set; } = DateTime.UtcNow;
+        public DateTime? DataFechamento { get; set; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@model List<ProjetoTi.Models.Chamado>
 @{
     ViewData["Title"] = "Dashboard";
-    var usuarioNome = TempData["UsuarioNome"]?.ToString();
+    var usuarioNome = ViewData["UsuarioNome"]?.ToString() ?? "Usuário";
 }
 
 <h2>Bem-vindo, @usuarioNome!</h2>
@@ -27,7 +27,7 @@
                 <td>@c.Titulo</td>
                 <td>@c.Descricao</td>
                 <td>@c.Status</td>
-                <td>@c.DataCriacao.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</td>
                 <td>
                     @if (c.Status != "Fechado")
                     {

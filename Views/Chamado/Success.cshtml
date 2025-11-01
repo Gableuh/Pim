@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Chamado Aberto";
+    Layout = null; // ou "_Layout"
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sucesso — Chamado Aberto</title>
+    <link rel="stylesheet" href="~/css/sucesso-chamado.css" />
+</head>
+<body>
+    <div style="display:flex;height:100vh;align-items:center;justify-content:center;flex-direction:column;gap:20px;padding:16px;background:#f6f8fb;">
+        <div style="background:#10b981;color:white;padding:20px 30px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);font-size:18px;text-align:center;">
+            ✅ Chamado aberto com sucesso!
+        </div>
+        <button onclick="window.location.href='@Url.Action("Index","Dashboard")'" style="padding:10px 20px;border-radius:12px;border:none;background:#2563eb;color:white;cursor:pointer;">← Voltar ao Dashboard</button>
+    </div>
+</body>
+</html>

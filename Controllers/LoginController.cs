@@ -13,46 +13,44 @@ namespace ProjetoTi.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(); // Layout = _LoginLayout.cshtml
+            return View();
         }
 
         // POST: /Login
         [HttpPost]
         public IActionResult Index(string email, string password, string role)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
+            try
             {
-                ViewBag.MensagemErro = "Todos os campos devem estar preenchidos.";
+                // tenta autenticar
+                var usuario = _repo.Autenticar(email, senha);
+
+                if (usuario == null)
+                {
+                    ViewBag.MensagemErro = "Usuário ou senha inválidos.";
+                    return View();
+                }
+
+                if (usuario.Papel == "tecnico")
+                {
+                    //return View();
+                }
+               
+                // se der certo, redireciona para dashboard (ou home)
+                return RedirectToAction("Index", "Dashboard");
+            }
+            catch (ArgumentException ex)
+            {
+                // erro da validação: email/senha vazios
+                ViewBag.MensagemErro = ex.Message;
                 return View();
             }
-
-            var usuario = _repo.Autenticar(email, password);
-            if (usuario == null)
+            catch (Exception ex)
             {
-                ViewBag.MensagemErro = "Usuário ou senha inválidos.";
+                // outros erros (ex: conexão)
+                ViewBag.MensagemErro = "Erro inesperado: " + ex.Message;
                 return View();
             }
-
-            if (!string.Equals(usuario.Papel, role, StringComparison.OrdinalIgnoreCase))
-            {
-                ViewBag.MensagemErro = "Email cadastrado já tem um login diferente.";
-                return View();
-            }
-
-            // Salva dados na sessão
-            HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
-            HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
-            HttpContext.Session.SetString("UsuarioPapel", usuario.Papel);
-
-            // Redireciona para Dashboard
-            return RedirectToAction("Dashboard", "Home");
-        }
-
-        // Logout
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Login");
         }
     }
 }

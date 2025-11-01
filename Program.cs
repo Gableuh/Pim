@@ -1,4 +1,4 @@
-﻿using ProjetoTi.Data;               // Repositórios (acesso a dados)
+﻿using ProjetoTi.Data;              // Acesso ao repositório de usuários
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,13 +7,13 @@ using System;
 var builder = WebApplication.CreateBuilder(args);
 
 // ========================================
-// 🔹 Configuração de Serviços
+// 🔹 Serviços do sistema
 // ========================================
 
 // Adiciona suporte a Controllers e Views (MVC)
 builder.Services.AddControllersWithViews();
 
-// Configura a sessão (para manter login e autenticação)
+// Configura a sessão (para login e autenticação)
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30); // expira após 30 minutos de inatividade
@@ -21,14 +21,14 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Registra os repositórios (para injeção de dependência)
+// Registra o repositório de usuários (injeção de dependência)
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<ChamadoRepository>();
 
 var app = builder.Build();
 
 // ========================================
-// 🔹 Inicialização do Banco e Usuário de Teste
+// 🔹 Inicialização do banco e usuário de teste
 // ========================================
 using (var scope = app.Services.CreateScope())
 {
@@ -36,7 +36,7 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        usuarioRepo.CriarUsuarioTeste(); // Cria usuário padrão se não existir
+        usuarioRepo.CriarUsuarioTeste(); // cria usuário de teste se não existir
         Console.WriteLine("✅ Usuário de teste garantido: gabriel@teste.com / 123456");
     }
     catch (Exception ex)
@@ -46,7 +46,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 // ========================================
-// 🔹 Configuração do Pipeline HTTP
+// 🔹 Configuração do pipeline HTTP
 // ========================================
 if (!app.Environment.IsDevelopment())
 {
@@ -54,23 +54,23 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();  // força HTTPS
-app.UseStaticFiles();       // habilita CSS, JS, imagens
-app.UseRouting();           // ativa o roteamento MVC
-app.UseSession();           // habilita a sessão
-app.UseAuthorization();     // autenticação/autorização (futuro)
+app.UseHttpsRedirection(); // força HTTPS
+app.UseStaticFiles();      // habilita CSS, JS, imagens
+app.UseRouting();          // ativa o roteamento MVC
+app.UseSession();          // ativa o uso de sessão
+app.UseAuthorization();    // ativa autenticação/autorização (futuro)
 
 // ========================================
-// 🔹 Rotas
+// 🔹 Definição de rotas
 // ========================================
 
-// Rota padrão — abrirá Login por padrão
+// Rota padrão (abrirá Login por padrão)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Login}/{action=Index}/{id?}"
 );
 
-// Endpoint opcional para testar conexão com o banco
+// Endpoint opcional de teste da conexão com o banco
 app.MapGet("/test-db", (UsuarioRepository repo) =>
 {
     try

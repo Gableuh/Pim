@@ -1,7 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Login";
-    Layout = null;
-    <!-- Login não usa layout da aplicação -->
+    Layout = null; // Tela isolada, sem layout compartilhado
 }
 
 <!DOCTYPE html>
@@ -10,7 +8,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SuporteTI IA — Login</title>
-
     <style>
         :root {
             --bg: #f6f8fb;
@@ -158,13 +155,15 @@
             </header>
 
             <section class="card-body">
-                <form method="post" action="@Url.Action("Index","Login")">
+                <form asp-controller="Login" asp-action="Index" method="post" novalidate>
                     <label for="email">E-mail</label>
+                    <!-- name ajustado para bater com o parâmetro do controller -->
                     <input id="email" name="email" type="email" placeholder="seu@exemplo.com" required>
 
-                    <label for="password">Senha</label>
+                    <label for="senha">Senha</label>
                     <div class="password-wrapper">
-                        <input id="password" name="password" type="password" placeholder="••••••••" required>
+                        <!-- name ajustado para bater com o parâmetro do controller -->
+                        <input id="senha" name="senha" type="password" placeholder="••••••••" required minlength="6" autocomplete="new-password">
                         <button type="button" id="togglePassword" aria-label="Mostrar senha">👁️</button>
                     </div>
 
@@ -176,9 +175,19 @@
 
                     <button class="btn primary" type="submit">Entrar</button>
 
+                    <!-- 🔹 Mensagens de erro -->
+                    @if (TempData["Erro"] != null)
+                    {
+                        <div style="color:red; text-align:center; margin-bottom:10px;">
+                            @TempData["Erro"]
+                        </div>
+                    }
+
                     @if (ViewBag.MensagemErro != null)
                     {
-                        <div class="form-message">@ViewBag.MensagemErro</div>
+                        <div style="color:red; text-align:center; margin-bottom:10px;">
+                            @ViewBag.MensagemErro
+                        </div>
                     }
                 </form>
             </section>
@@ -191,7 +200,7 @@
 
     <script>
         const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('password');
+        const passwordInput = document.getElementById('senha');
         togglePassword.addEventListener('click', () => {
           passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         });

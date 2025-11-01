@@ -23,6 +23,7 @@ builder.Services.AddSession(options =>
 
 // Registra o repositório de usuários (injeção de dependência)
 builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<ChamadoRepository>();
 
 var app = builder.Build();
 

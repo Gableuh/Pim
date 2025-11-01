@@ -1,0 +1,191 @@
+﻿@{
+    ViewData["Title"] = "Abrir Chamado";
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@ViewData["Title"] — SuporteTI IA</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #fff;
+            --accent: #2563eb;
+            --muted: #6b7280;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
+            --radius: 12px
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+            background: var(--bg);
+            color: #111827
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 28px auto;
+            padding: 18px
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px
+        }
+
+        h2 {
+            margin: 0 0 12px 0
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 240px;
+            gap: 16px
+        }
+
+        .field {
+            margin-bottom: 12px
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 15px
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 8px
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer
+        }
+
+        .link {
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        @@media (max-width:800px) {
+            .row {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="panel">
+            <h2>Abrir Novo Chamado</h2>
+            <p class="muted">Preencha os campos abaixo e envie.</p>
+
+            <form id="abrirChamadoForm" method="post" action="@Url.Action("Create","Chamado")">
+                @Html.AntiForgeryToken()
+
+                <div class="field">
+                    <label for="Titulo">Assunto</label>
+                    <input id="Titulo" name="Titulo" type="text" required />
+                </div>
+
+                <div class="row">
+                    <div>
+                        <div class="field">
+                            <label for="Setor">Setor</label>
+                            <input id="Setor" name="Setor" type="text" />
+                        </div>
+                        <div class="field">
+                            <label for="Descricao">Descrição</label>
+                            <textarea id="Descricao" name="Descricao" rows="6"></textarea>
+                        </div>
+                    </div>
+
+                    <aside>
+                        <div class="field">
+                            <label for="Prioridade">Prioridade</label>
+                            <select id="Prioridade" name="Prioridade">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média">Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="Colaborador">Colaborador</label>
+                            <input id="Colaborador" name="Colaborador" type="text" />
+                        </div>
+
+                        <div class="actions">
+                            <button type="submit" class="btn">Enviar</button>
+                            <a class="link" href="@Url.Action("Dashboard","Chamado")">← Voltar</a>
+                        </div>
+
+                        <p id="msg" style="color:red;margin-top:8px"></p>
+                    </aside>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Submissão por AJAX (opcional) — se der erro no fetch, formulário normal ainda funciona
+        const form = document.getElementById('abrirChamadoForm');
+        form.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const msg = document.getElementById('msg');
+          msg.textContent = '';
+          const fd = new FormData(form);
+          // pega token antiforgery
+          const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+          const token = tokenInput ? tokenInput.value : null;
+          try{
+            const resp = await fetch(form.action, {
+              method: 'POST',
+              headers: token ? { 'RequestVerificationToken': token } : {},
+              body: fd
+            });
+            // se o controller redirect, fetch pode retornar HTML — para simplicidade, recarregamos
+            if(resp.redirected) {
+              window.location.href = resp.url;
+              return;
+            }
+            const json = await resp.json().catch(()=>null);
+            if(json && json.sucesso){
+              // sucesso: vai pra dashboard e mostra novo card (ou recarrega)
+              window.location.href = '@Url.Action("Dashboard", "Chamado")';
+            } else {
+              msg.textContent = (json && json.mensagem) ? json.mensagem : 'Chamado criado (ou erro desconhecido).';
+              // se quiser recarregar: window.location.reload();
+            }
+          } catch(err){
+            // fallback: submit normal
+            form.submit();
+          }
+        });
+    </script>
+</body>
+</html>

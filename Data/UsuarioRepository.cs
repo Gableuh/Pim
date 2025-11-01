@@ -27,7 +27,7 @@ namespace ProjetoTi.Data
             {
                 return new Usuario
                 {
-                    Id = reader.GetGuid(reader.GetOrdinal("id")),
+                    Id = reader.GetInt32(reader.GetOrdinal("id")),
                     Nome = reader.GetString(reader.GetOrdinal("nome")),
                     Email = reader.GetString(reader.GetOrdinal("email")),
                     Senha = reader.GetString(reader.GetOrdinal("senha")),

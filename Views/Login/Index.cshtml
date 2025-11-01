@@ -19,6 +19,7 @@
             --accent: #2563eb;
         }
 
+        /* Reset e layout */
         body, html {
             margin: 0;
             padding: 0;
@@ -120,27 +121,6 @@
                 color: var(--text);
             }
 
-        .row.between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: var(--text);
-        }
-
-            .remember input[type="checkbox"] {
-                accent-color: var(--accent);
-                width: 16px;
-                height: 16px;
-                cursor: pointer;
-            }
-
         .btn.primary {
             background: var(--accent);
             color: white;
@@ -153,20 +133,12 @@
             margin-top: 8px;
         }
 
-        .signup, .card-footer {
-            text-align: center;
+        .form-message {
+            margin-top: 8px;
             font-size: 13px;
-            color: var(--muted);
+            color: red;
+            text-align: center;
         }
-
-            .signup a, .link {
-                color: var(--accent);
-                text-decoration: none;
-            }
-
-                .signup a:hover, .link:hover {
-                    text-decoration: underline;
-                }
     </style>
 </head>
 <body>
@@ -201,13 +173,7 @@
                         <option value="tecnico">Técnico</option>
                     </select>
 
-                    <div class="row between">
-                        <div class="remember">
-                            <input id="remember" name="remember" type="checkbox">
-                            <label for="remember">Lembrar-me</label>
-                        </div>
-                        <a class="link" href="/RecuperarSenha">Esqueci a senha</a>
-                    </div>
+                    <button class="btn primary" type="submit">Entrar</button>
 
                     <!-- 🔹 Mensagens de erro -->
                     @if (TempData["Erro"] != null)
@@ -223,19 +189,10 @@
                             @ViewBag.MensagemErro
                         </div>
                     }
-
-                    <button class="btn primary" type="submit">Entrar</button>
-
-                    <div class="signup">
-                        <span>Não tem conta?</span>
-                        <a class="link" href="/Cadastro">Cadastre-se</a>
-                    </div>
-
-                    <div id="formMessage" role="status" class="form-message" aria-live="polite"></div>
                 </form>
             </section>
 
-            <footer class="card-footer">
+            <footer class="card-footer" style="text-align:center;font-size:13px;color:var(--muted);padding:12px;">
                 <small>Universidade • Projeto de Sistemas • LGPD aplicada</small>
             </footer>
         </div>
@@ -245,7 +202,7 @@
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('senha');
         togglePassword.addEventListener('click', () => {
-            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         });
     </script>
 </body>

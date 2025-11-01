@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ProjetoTi.Data;
 using ProjetoTi.Models;
 
@@ -8,14 +9,16 @@ namespace ProjetoTi.Controllers
     {
         private readonly UsuarioRepository _repo = new UsuarioRepository();
 
+        // GET: /Login
         [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+        // POST: /Login
         [HttpPost]
-        public IActionResult Index(string email, string senha)
+        public IActionResult Index(string email, string password, string role)
         {
             try
             {

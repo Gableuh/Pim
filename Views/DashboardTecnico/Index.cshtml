@@ -1,3 +1,7 @@
+﻿@{
+    Layout = null; // Tela isolada
+}
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,48 +12,49 @@
         :root {
             --bg: #f6f8fb;
             --card: #ffffff;
-            --muted: #6b7280;
             --text: #111827;
+            --muted: #6b7280;
             --accent: #2563eb;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f97316;
             --medium: #facc15;
-            --shadow: 0 6px 18px rgba(16,24,40,0.06);
             --radius: 12px;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
         }
 
-        /* Reset básico */
         body, html {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+            font-family: Inter,system-ui,sans-serif;
             background: var(--bg);
             color: var(--text);
-            -webkit-font-smoothing: antialiased;
         }
 
-        /* Layout principal */
         .app {
             min-height: 100vh;
             display: grid;
             grid-template-columns: 260px 1fr;
             gap: 24px;
-            padding: 28px;
-            align-items: start;
+            padding: 16px;
         }
 
-        /* Sidebar Técnico */
+        /* Sidebar */
         .sidebar {
-            background: linear-gradient(180deg, rgba(255,255,255,0.9), var(--card));
+            background: var(--card);
             border-radius: var(--radius);
             padding: 18px;
             box-shadow: var(--shadow);
-            height: calc(100vh - 56px);
             display: flex;
             flex-direction: column;
+            height: calc(100vh - 32px); /* Mantém altura com padding */
+            position: relative;
+            transition: transform 0.3s ease;
         }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
 
         .brand {
             display: flex;
@@ -72,15 +77,15 @@
             }
 
             .brand h1 {
-                font-size: 16px;
                 margin: 0;
+                font-size: 16px;
             }
 
         .nav {
-            margin-top: 8px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            margin-top: 8px;
         }
 
             .nav button {
@@ -96,22 +101,11 @@
                 font-size: 15px;
             }
 
-                .nav button .ico {
-                    width: 30px;
-                    text-align: center;
-                    font-size: 18px;
-                }
-
-                .nav button:hover {
-                    background: rgba(99,102,241,0.06);
-                }
-
                 .nav button.active {
                     background: rgba(37,99,235,0.12);
                     color: var(--accent);
                 }
 
-        /* Seção Atalhos */
         .sidebar-title {
             font-size: 13px;
             color: var(--muted);
@@ -125,7 +119,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            align-items: center; /* centraliza conteúdo */
+            align-items: center;
         }
 
         .nav-item.secondary {
@@ -135,15 +129,14 @@
             padding: 10px 12px;
             border-radius: 10px;
             cursor: pointer;
+            width: 80%;
             text-align: center;
-            width: 80%; /* opcional para deixar o botão mais estreito e centralizado */
         }
 
             .nav-item.secondary:hover {
                 background: rgba(37,99,235,0.12);
             }
 
-        /* Footer da sidebar */
         .footer {
             font-size: 13px;
             color: var(--muted);
@@ -151,26 +144,19 @@
             text-align: center;
         }
 
-        /* Main content */
+        /* Main */
         .main {
             display: flex;
             flex-direction: column;
             gap: 18px;
         }
 
-        /* Header de boas-vindas */
         .content-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 12px;
         }
-
-            .content-header .left {
-                display: flex;
-                gap: 16px;
-                align-items: center;
-            }
 
             .content-header h2 {
                 margin: 0;
@@ -182,7 +168,6 @@
                 color: var(--muted);
             }
 
-        /* Top button Desconectar */
         .top-buttons {
             display: flex;
             justify-content: flex-end;
@@ -203,7 +188,7 @@
             font-size: 14px;
         }
 
-        /* Balão de pesquisa */
+        /* Busca */
         .search-balloon {
             background: var(--card);
             border-radius: var(--radius);
@@ -212,12 +197,6 @@
             margin-bottom: 12px;
         }
 
-            .search-balloon h4 {
-                margin: 0 0 12px 0;
-                font-size: 16px;
-            }
-
-        /* Search / Filter area */
         .search-bar {
             display: flex;
             flex-wrap: wrap;
@@ -242,12 +221,13 @@
                 font-weight: 600;
             }
 
-        /* Panel / table */
+        /* Painéis */
         .panel {
             background: var(--card);
             border-radius: var(--radius);
             padding: 18px;
             box-shadow: var(--shadow);
+            overflow-x: auto;
         }
 
         table {
@@ -297,31 +277,61 @@
                 color: var(--success);
             }
 
-        .btn {
-            background: var(--accent);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 10px;
-            border: 0;
-            cursor: pointer;
+        /* ===== Responsividade ===== */
+        @@media (max-width: 900px)
+
+        {
+            .app
+
+        {
+            grid-template-columns: 1fr;
+            padding: 12px;
         }
 
-        .assigned-info {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            transform: translateX(-110%);
+            z-index: 30;
+            height: 100vh;
+        }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+        .search-bar {
+            flex-direction: column;
+        }
+
+        }
+
+        @@media (max-width: 500px)
+
+        {
+            .panel
+
+        {
+            padding: 12px;
+        }
+
+        .search-bar input, .search-bar select, .search-bar button {
+            flex: 1 1 100%;
+        }
+
+        button.fixed {
             font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
+            padding: 8px 12px;
         }
 
-        .muted {
-            color: var(--muted);
-            font-size: 13px;
         }
     </style>
 </head>
 <body>
-    <div class="app" id="app">
-        <!-- Sidebar -->
-        <aside class="sidebar panel" id="sidebar">
+    <div class="app">
+        <aside class="sidebar">
             <div class="brand">
                 <div class="logo">🛠️</div>
                 <div>
@@ -329,36 +339,26 @@
                     <div class="muted">Painel Técnico</div>
                 </div>
             </div>
-
             <nav class="nav">
-                <button class="nav-item active" data-view="recents"><span class="ico">📋</span> Chamados Recentes</button>
-                <button class="nav-item" data-view="meus"><span class="ico">🗂️</span> Meus Chamados</button>
+                <button class="nav-item active" data-view="recents">📋 Chamados Recentes</button>
+                <button class="nav-item" data-view="meus">🗂️ Meus Chamados</button>
             </nav>
-
-            <!-- Seção Atalhos -->
             <div class="sidebar-title">Atalhos</div>
             <div class="sidebar-shortcuts">
                 <button class="nav-item secondary" id="logoutBtn">Sair</button>
                 <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
             </div>
         </aside>
-
-        <!-- Main content -->
         <main class="main">
-            <!-- Header de boas-vindas -->
             <div class="content-header">
-                <div class="left">
-                    <div>
-                        <h2>Bem-vindo, Técnico</h2>
-                        <p class="muted">Aqui você pode acompanhar e gerenciar os chamados abertos.</p>
-                    </div>
+                <div>
+                    <h2>Bem-vindo, Técnico</h2>
+                    <p class="muted">Aqui você pode acompanhar e gerenciar os chamados abertos.</p>
                 </div>
                 <div class="top-buttons">
                     <button class="fixed">🚫 Desconectar</button>
                 </div>
             </div>
-
-            <!-- Balão de pesquisa -->
             <div class="search-balloon">
                 <h4>Procurar Chamado</h4>
                 <div class="search-bar">
@@ -377,12 +377,9 @@
                     <button id="searchBtn">Pesquisar</button>
                 </div>
             </div>
-
-            <!-- Chamados Recentes -->
-            <section id="view-recents" class="panel" role="region">
+            <section id="view-recents" class="panel">
                 <h3>Chamados Recentes</h3>
                 <p class="muted">Últimos chamados abertos no sistema.</p>
-
                 <table id="chamadosTable">
                     <thead>
                         <tr>
@@ -404,7 +401,7 @@
                             <td>TI / Software</td>
                             <td><span class="badge urgente">Urgente</span></td>
                             <td>Arthur</td>
-                            <td><span>Não atribuído</span><div class="assigned-info">Aguardando atendimento</div></td>
+                            <td>Não atribuído</td>
                             <td><button class="btn">Visualizar</button></td>
                         </tr>
                         <tr>
@@ -414,25 +411,13 @@
                             <td>Financeiro / Aplicação</td>
                             <td><span class="badge alta">Alta</span></td>
                             <td>Marina</td>
-                            <td><span>Fulano</span><div class="assigned-info">Em atendimento</div></td>
-                            <td><button class="btn">Visualizar</button></td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Falha no login do colaborador</td>
-                            <td>12/10/2025 10:15</td>
-                            <td>RH / Sistema</td>
-                            <td><span class="badge media">Média</span></td>
-                            <td>Lucas</td>
-                            <td><span>Não atribuído</span><div class="assigned-info">Aguardando atendimento</div></td>
+                            <td>Fulano</td>
                             <td><button class="btn">Visualizar</button></td>
                         </tr>
                     </tbody>
                 </table>
             </section>
-
-            <!-- Meus Chamados -->
-            <section id="view-meus" class="panel" style="display:none">
+            <section id="view-meus" class="panel" style="display:none;">
                 <h3>Meus Chamados</h3>
                 <p class="muted">Chamados que você está atendendo.</p>
             </section>
@@ -441,44 +426,33 @@
 
     <script>
         const navButtons = document.querySelectorAll('.nav-item');
-        const views = {
-            recents: document.getElementById('view-recents'),
-            meus: document.getElementById('view-meus')
-        };
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                navButtons.forEach(b => b.classList.remove('active'));
+        const views = { recents: document.getElementById('view-recents'), meus: document.getElementById('view-meus') };
+        navButtons.forEach(btn=>{
+            btn.addEventListener('click', ()=>{
+                navButtons.forEach(b=>b.classList.remove('active'));
                 btn.classList.add('active');
                 const view = btn.dataset.view;
-                Object.keys(views).forEach(k => views[k].style.display = (k === view) ? '' : 'none');
+                Object.keys(views).forEach(k=>views[k].style.display = (k===view)?'':'none');
             });
         });
-
-        // Logout lateral
-        document.getElementById('logoutBtn')?.addEventListener('click', () => alert('Logout (simulado)'));
-
-        // Logout superior
-        document.querySelector('.top-buttons .fixed')?.addEventListener('click', () => alert('Logout (simulado)'));
-
-        // Função de pesquisa / filtro simples
-        document.getElementById('searchBtn').addEventListener('click', () => {
+        document.getElementById('logoutBtn')?.addEventListener('click', ()=>alert('Logout simulado'));
+        document.querySelector('.top-buttons .fixed')?.addEventListener('click', ()=>alert('Logout simulado'));
+        document.getElementById('searchBtn').addEventListener('click', ()=>{
             const id = document.getElementById('searchId').value.toLowerCase();
             const assunto = document.getElementById('searchAssunto').value.toLowerCase();
             const data = document.getElementById('searchData').value;
             const setor = document.getElementById('searchSetor').value.toLowerCase();
             const prioridade = document.getElementById('searchPrioridade').value.toLowerCase();
             const colaborador = document.getElementById('searchColaborador').value.toLowerCase();
-
             const rows = document.querySelectorAll('#chamadosTable tbody tr');
-            rows.forEach(row => {
+            rows.forEach(row=>{
                 const cells = row.querySelectorAll('td');
-                const match =
-                    (!id || cells[0].textContent.toLowerCase().includes(id)) &&
-                    (!assunto || cells[1].textContent.toLowerCase().includes(assunto)) &&
-                    (!data || cells[2].textContent.includes(data)) &&
-                    (!setor || cells[3].textContent.toLowerCase().includes(setor)) &&
-                    (!prioridade || cells[4].textContent.toLowerCase().includes(prioridade)) &&
-                    (!colaborador || cells[5].textContent.toLowerCase().includes(colaborador));
+                const match = (!id||cells[0].textContent.toLowerCase().includes(id)) &&
+                              (!assunto||cells[1].textContent.toLowerCase().includes(assunto)) &&
+                              (!data||cells[2].textContent.includes(data)) &&
+                              (!setor||cells[3].textContent.toLowerCase().includes(setor)) &&
+                              (!prioridade||cells[4].textContent.toLowerCase().includes(prioridade)) &&
+                              (!colaborador||cells[5].textContent.toLowerCase().includes(colaborador));
                 row.style.display = match ? '' : 'none';
             });
         });

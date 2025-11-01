@@ -9,59 +9,46 @@ namespace ProjetoTi.Controllers
     {
         private readonly UsuarioRepository _repo = new UsuarioRepository();
 
+        // GET: /Login
         [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            return View(); // Layout = _LoginLayout.cshtml
         }
 
+        // POST: /Login
         [HttpPost]
         public IActionResult Index(string email, string password, string role)
         {
-            try
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
             {
-                // Validação básica
-                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(role))
-                {
-                    ViewBag.MensagemErro = "Todos os campos devem estar preenchidos.";
-                    return View();
-                }
-
-                // Autentica usuário
-                var usuario = _repo.Autenticar(email, password);
-
-                if (usuario == null)
-                {
-                    ViewBag.MensagemErro = "Usuário ou senha inválidos.";
-                    return View();
-                }
-
-                // Verifica se o papel do usuário bate com o selecionado no login
-                if (!string.Equals(usuario.Papel, role, StringComparison.OrdinalIgnoreCase))
-                {
-                    ViewBag.MensagemErro = "Email cadastrado já tem um login diferente.";
-                    return View();
-                }
-
-                // ✅ Salva dados do usuário na sessão
-                HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
-                HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
-                HttpContext.Session.SetString("UsuarioPapel", usuario.Papel);
-
-                // ✅ Redireciona conforme o papel
-                if (usuario.Papel.ToLower() == "tecnico")
-                    return RedirectToAction("Index", "DashboardTecnico");
-                else
-                    return RedirectToAction("Index", "Dashboard");
-            }
-            catch (Exception ex)
-            {
-                ViewBag.MensagemErro = "Erro inesperado: " + ex.Message;
+                ViewBag.MensagemErro = "Todos os campos devem estar preenchidos.";
                 return View();
             }
+
+            var usuario = _repo.Autenticar(email, password);
+            if (usuario == null)
+            {
+                ViewBag.MensagemErro = "Usuário ou senha inválidos.";
+                return View();
+            }
+
+            if (!string.Equals(usuario.Papel, role, StringComparison.OrdinalIgnoreCase))
+            {
+                ViewBag.MensagemErro = "Email cadastrado já tem um login diferente.";
+                return View();
+            }
+
+            // Salva dados na sessão
+            HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
+            HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
+            HttpContext.Session.SetString("UsuarioPapel", usuario.Papel);
+
+            // Redireciona para Dashboard
+            return RedirectToAction("Dashboard", "Home");
         }
 
-        // ✅ Logout - limpa a sessão e volta pro login
+        // Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

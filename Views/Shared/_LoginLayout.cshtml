@@ -1,0 +1,154 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - SuporteTI IA</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --header-bg: #2563eb;
+            --text: #111827;
+            --header-text: #ffffff;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --radius: 12px;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
+        }
+
+        /* Reset e fontes */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 24px;
+            text-align: center;
+        }
+
+        .brand .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #1e40af;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .brand h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .brand p {
+            font-size: 14px;
+            margin: 4px 0 0 0;
+            color: var(--header-text);
+        }
+
+        .card-body {
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        input, select, textarea {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .form-message {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--danger);
+            text-align: center;
+        }
+
+        .signup {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 10px;
+        }
+
+            .signup a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+
+                .signup a:hover {
+                    text-decoration: underline;
+                }
+
+        .password-wrapper {
+            display: flex;
+            gap: 6px;
+        }
+
+            .password-wrapper input {
+                flex: 1;
+            }
+
+            .password-wrapper button {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+            }
+    </style>
+</head>
+<body>
+    @RenderBody()
+</body>
+</html>

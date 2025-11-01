@@ -1,54 +1,63 @@
-﻿<!DOCTYPE html>
+﻿@model List<ProjetoTi.Models.Chamado>
+@{
+    ViewData["Title"] = "Dashboard";
+    var usuarioNome = ViewData["UsuarioNome"]?.ToString() ?? "Usuário";
+}
+
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Dashboard — SuporteTI IA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] — SuporteTI IA</title>
     <style>
         :root {
             --bg: #f6f8fb;
             --card: #ffffff;
-            --muted: #6b7280;
-            --text: #111827;
             --accent: #2563eb;
-            --primary: #1e63d6;
+            --text: #111827;
+            --muted: #6b7280;
             --success: #10b981;
             --danger: #ef4444;
-            --shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
             --radius: 12px;
+            --header-bg: #2563eb;
+            --header-text: #fff;
+            --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
         }
 
-        [data-theme="dark"] {
-            --bg: #0b1220;
-            --card: #071226;
-            --muted: #9aa6b2;
-            --text: #e6eef6;
-            --accent: #60a5fa;
-            --shadow: 0 8px 20px rgba(2, 6, 23, 0.6);
-        }
-
+        /* Reset */
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font);
         }
 
         body {
-            margin: 0;
-            font-family: "Inter", system-ui, sans-serif;
             background: var(--bg);
             color: var(--text);
+            min-height: 100vh;
         }
 
-        /* Layout principal */
+        a {
+            text-decoration: none;
+            color: var(--accent);
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        /* Layout */
         .app {
             display: grid;
             grid-template-columns: 260px 1fr;
             gap: 24px;
             padding: 28px;
-            min-height: 100vh;
             transition: 0.3s ease;
         }
 
-        /* Sidebar */
         .sidebar {
             background: var(--card);
             border-radius: var(--radius);
@@ -57,14 +66,14 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: 0.25s ease;
             position: relative;
-            transition: transform 0.25s ease;
         }
 
             .sidebar .brand {
                 display: flex;
+                flex-direction: column;
                 align-items: center;
-                gap: 12px;
                 margin-bottom: 20px;
             }
 
@@ -78,6 +87,18 @@
                     align-items: center;
                     justify-content: center;
                     border-radius: 10px;
+                    margin-bottom: 12px;
+                    font-size: 24px;
+                }
+
+                .sidebar .brand h1 {
+                    font-size: 22px;
+                    margin-bottom: 4px;
+                }
+
+                .sidebar .brand p {
+                    font-size: 14px;
+                    color: var(--muted);
                 }
 
         .nav {
@@ -109,7 +130,7 @@
                     color: var(--accent);
                 }
 
-        /* Conteúdo principal */
+        /* Main */
         .main {
             display: flex;
             flex-direction: column;
@@ -130,7 +151,7 @@
             cursor: pointer;
         }
 
-        h2 {
+        h2, h3, h4 {
             margin: 0;
         }
 
@@ -141,7 +162,7 @@
             padding: 20px;
         }
 
-        /* Cards de chamados */
+        /* Grid de Cards */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
@@ -160,7 +181,6 @@
         }
 
             .card h4 {
-                margin: 0;
                 font-size: 16px;
             }
 
@@ -220,7 +240,7 @@
             z-index: 100;
         }
 
-        /* Responsividade */
+        /* Responsivo */
         @@media (max-width:900px) {
             .app
 
@@ -251,25 +271,20 @@
     </style>
 </head>
 <body>
-    <button class="fixed">🚫 Desconectar</button>
-
+    <button class="fixed" onclick="location.href='@Url.Action("Logout","Login")'">🚫 Sair</button>
     <div class="app">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div>
-                <div class="brand">
-                    <div class="logo">👤</div>
-                    <div>
-                        <h1>SuporteTI IA</h1>
-                        <p class="muted">Painel do Usuário</p>
-                    </div>
-                </div>
-                <nav class="nav">
-                    <button class="nav-item active" data-view="recents">📋 Chamados Recentes</button>
-                    <button class="nav-item" data-view="abrir">✚ Abrir Chamado</button>
-                    <button class="nav-item" data-view="meus">🗂️ Meus Chamados</button>
-                </nav>
+            <div class="brand">
+                <div class="logo">👤</div>
+                <h1>SuporteTI IA</h1>
+                <p>@usuarioNome</p>
             </div>
+            <nav class="nav">
+                <button class="nav-item active" data-view="recents">📋 Chamados Recentes</button>
+                <button class="nav-item" data-view="abrir">✚ Abrir Chamado</button>
+                <button class="nav-item" data-view="meus">🗂️ Meus Chamados</button>
+            </nav>
         </aside>
 
         <!-- Conteúdo principal -->
@@ -277,7 +292,7 @@
             <header class="topbar">
                 <button class="hamburger" id="toggleSidebar">☰</button>
                 <div>
-                    <h2>Bem-vindo, Usuário</h2>
+                    <h2>Bem-vindo, @usuarioNome</h2>
                     <p class="muted">Painel de suporte e abertura de chamados</p>
                 </div>
             </header>
@@ -286,32 +301,32 @@
             <section id="view-recents" class="panel">
                 <h3>Chamados Recentes</h3>
                 <div class="grid">
-                    <div class="card">
-                        <h4>💻 Sistema travando ao abrir Excel</h4>
-                        <p class="muted">Setor: TI / Software</p>
-                        <p><strong>Data:</strong> 14/10/2025 08:30</p>
-                        <span class="badge pending">Urgente</span>
-                        <button class="btn">Visualizar</button>
-                    </div>
-                    <div class="card">
-                        <h4>💰 Erro no sistema financeiro</h4>
-                        <p class="muted">Setor: Financeiro / Aplicação</p>
-                        <p><strong>Data:</strong> 13/10/2025 14:45</p>
-                        <span class="badge open">Aberto</span>
-                        <button class="btn">Visualizar</button>
-                    </div>
+                    @foreach (var c in Model)
+                    {
+                        <div class="card">
+                            <h4>@c.Titulo</h4>
+                            <p class="muted">@c.Descricao</p>
+                            <p><strong>Status:</strong> @c.Status</p>
+                            <p><strong>Data:</strong> @c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</p>
+                            <span class="badge @(c.Status.ToLower())">@c.Status</span>
+                            @if (c.Status != "Fechado")
+                            {
+                                <a class="btn" href="@Url.Action("FecharChamado","Home",new {id=c.Id})">Fechar</a>
+                            }
+                        </div>
+                    }
                 </div>
             </section>
 
             <!-- Abrir Chamado -->
             <section id="view-abrir" class="panel" style="display:none;">
                 <h3>Abrir Novo Chamado</h3>
-                <form>
-                    <label>Assunto</label><br>
-                    <input type="text" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;"><br><br>
-                    <label>Descrição</label><br>
-                    <textarea rows="4" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;"></textarea><br><br>
-                    <button class="btn">Enviar</button>
+                <form method="post" action="@Url.Action("CriarChamado","Home")">
+                    <label>Título</label>
+                    <input type="text" name="titulo" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="4" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;"></textarea>
+                    <button class="btn" type="submit">Enviar</button>
                 </form>
             </section>
 
@@ -325,24 +340,22 @@
 
     <script>
         // Sidebar recolhível
-        const sidebar = document.getElementById('sidebar');
-        document.getElementById('toggleSidebar').addEventListener('click', ()=>{
-            sidebar.classList.toggle('open');
-        });
+        const sidebar=document.getElementById('sidebar');
+        document.getElementById('toggleSidebar').addEventListener('click',()=>{sidebar.classList.toggle('open');});
 
         // Navegação entre seções
-        const navButtons = document.querySelectorAll('.nav-item');
-        const views = {
-            recents: document.getElementById('view-recents'),
-            abrir: document.getElementById('view-abrir'),
-            meus: document.getElementById('view-meus')
+        const navButtons=document.querySelectorAll('.nav-item');
+        const views={
+            recents:document.getElementById('view-recents'),
+            abrir:document.getElementById('view-abrir'),
+            meus:document.getElementById('view-meus')
         };
         navButtons.forEach(btn=>{
-            btn.addEventListener('click', ()=>{
+            btn.addEventListener('click',()=>{
                 navButtons.forEach(b=>b.classList.remove('active'));
                 btn.classList.add('active');
-                const view = btn.dataset.view;
-                Object.keys(views).forEach(k=>views[k].style.display = (k===view)?'':'none');
+                const view=btn.dataset.view;
+                Object.keys(views).forEach(k=>views[k].style.display=(k===view)?'':'none');
             });
         });
     </script>

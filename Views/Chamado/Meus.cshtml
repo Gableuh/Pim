@@ -1,0 +1,147 @@
+﻿@model List<ProjetoTi.Models.Chamado>
+@{
+    ViewData["Title"] = "Meus Chamados";
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@ViewData["Title"] — SuporteTI IA</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #fff;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
+            --radius: 12px
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+            background: var(--bg);
+            color: #111827
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 28px auto;
+            padding: 18px
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px
+        }
+
+        thead th {
+            background: #f3f4f6;
+            padding: 10px;
+            border-bottom: 1px solid #e6e6e6;
+            text-align: left
+        }
+
+        tbody td {
+            padding: 10px;
+            border-bottom: 1px solid #f1f1f1
+        }
+
+        .badge {
+            padding: 6px 8px;
+            border-radius: 999px;
+            font-size: 12px
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 0;
+            text-decoration: none
+        }
+
+        @@media (max-width:700px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 12px;
+                border-radius: 8px;
+                background: #fff;
+                box-shadow: var(--shadow);
+                padding: 12px;
+            }
+
+            td {
+                padding: 6px 8px;
+                border-bottom: none;
+            }
+
+                td::before {
+                    content: attr(data-label);
+                    font-weight: 600;
+                    display: block;
+                    margin-bottom: 6px;
+                    color: var(--muted)
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="panel">
+            <h2>Meus Chamados</h2>
+            @if (Model != null && Model.Count > 0)
+            {
+                <table aria-label="Meus chamados">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model)
+                        {
+                            <tr>
+                                <td data-label="ID">@c.Id</td>
+                                <td data-label="Título">@c.Titulo</td>
+                                <td data-label="Data">@c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td data-label="Status"><span class="badge @(c.Status.ToLower()=="aberto"?"open":c.Status.ToLower()=="pendente"?"pending":"closed")">@c.Status</span></td>
+                                <td data-label="Ações"><a class="btn" href="@Url.Action("Visualizar","Chamado", new { id = c.Id })">Visualizar</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="muted">Nenhum chamado encontrado. <a href="@Url.Action("Create","Chamado")">Abrir novo</a></div>
+            }
+        </div>
+    </div>
+</body>
+</html>

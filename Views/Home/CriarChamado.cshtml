@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Abrir Chamado";
+}
+<section class="panel">
+    <h2>Abrir Novo Chamado</h2>
+    <form method="post" action="@Url.Action("CriarChamado","Home")">
+        <label>Título</label>
+        <input type="text" name="titulo" required>
+        <label>Descrição</label>
+        <textarea name="descricao" rows="5" required></textarea>
+        <button type="submit" class="btn">Criar Chamado</button>
+    </form>
+</section>

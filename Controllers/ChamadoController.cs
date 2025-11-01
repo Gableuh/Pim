@@ -2,6 +2,7 @@
 using ProjetoTi.Data;
 using ProjetoTi.Models;
 using System;
+using System.Linq;
 
 namespace ProjetoTi.Controllers
 {
@@ -14,19 +15,47 @@ namespace ProjetoTi.Controllers
             _chamRepo = chamRepo;
         }
 
-        // GET: /Chamado/Create  (abre o formulário)
+        // ===================== DASHBOARD =====================
+        [HttpGet]
+        public IActionResult Dashboard()
+        {
+            var userId = HttpContext.Session.GetInt32("UsuarioId");
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            // Pega todos os chamados do usuário logado
+            var chamados = _chamRepo.ListarChamadosPorUsuario(userId.Value);
+            ViewBag.NomeUsuario = HttpContext.Session.GetString("UsuarioNome");
+            ViewBag.TotalChamados = chamados.Count();
+            ViewBag.Abertos = chamados.Count(c => c.Status == "aberto");
+            ViewBag.Fechados = chamados.Count(c => c.Status == "fechado");
+
+            return View(chamados);
+        }
+
+        // ===================== LISTAR MEUS CHAMADOS =====================
+        [HttpGet]
+        public IActionResult Meus()
+        {
+            var userId = HttpContext.Session.GetInt32("UsuarioId");
+            if (userId == null)
+                return RedirectToAction("Index", "Login");
+
+            var meusChamados = _chamRepo.ListarChamadosPorUsuario(userId.Value);
+            return View(meusChamados);
+        }
+
+        // ===================== CRIAR CHAMADO =====================
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: /Chamado/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(string Titulo, string Setor, string Prioridade, string Colaborador, string Descricao)
         {
-            // obtém usuário logado da sessão
             var userIdObj = HttpContext.Session.GetInt32("UsuarioId");
             if (userIdObj == null)
             {
@@ -36,7 +65,6 @@ namespace ProjetoTi.Controllers
 
             int userId = userIdObj.Value;
 
-            // Monta descrição agregando os campos extra (setor/prioridade/colaborador)
             var fullDesc = $"Setor: {Setor}\nPrioridade: {Prioridade}\nColaborador: {Colaborador}\n\n{Descricao}";
 
             var chamado = new Chamado
@@ -68,7 +96,7 @@ namespace ProjetoTi.Controllers
             }
         }
 
-        // GET: /Chamado/Success
+        // ===================== TELA DE SUCESSO =====================
         [HttpGet]
         public IActionResult Success()
         {

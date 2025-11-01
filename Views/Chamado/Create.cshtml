@@ -1,88 +1,191 @@
 ﻿@{
     ViewData["Title"] = "Abrir Chamado";
-    Layout = null; // se tiver _Layout troque para "_Layout"
 }
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>@ViewData["Title"] — SuporteTI IA</title>
-    <link rel="stylesheet" href="~/css/dashboard-usuario.css" /> <!-- opcional: mover CSS para wwwroot -->
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #fff;
+            --accent: #2563eb;
+            --muted: #6b7280;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
+            --radius: 12px
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+            background: var(--bg);
+            color: #111827
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 28px auto;
+            padding: 18px
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px
+        }
+
+        h2 {
+            margin: 0 0 12px 0
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 240px;
+            gap: 16px
+        }
+
+        .field {
+            margin-bottom: 12px
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 15px
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 8px
+        }
+
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 0;
+            cursor: pointer
+        }
+
+        .link {
+            color: var(--accent);
+            text-decoration: none
+        }
+
+        @@media (max-width:800px) {
+            .row {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
 </head>
 <body>
-    <button class="fixed voltar" onclick="history.back()">← Voltar</button>
-    <button class="fixed desconectar" onclick="location.href='@Url.Action("Logout", "Login")'">🚫 Desconectar</button>
+    <div class="container">
+        <div class="panel">
+            <h2>Abrir Novo Chamado</h2>
+            <p class="muted">Preencha os campos abaixo e envie.</p>
 
-    <div class="app">
-        <aside class="sidebar panel">
-            <div class="brand">
-                <div class="logo">👤</div>
-                <div>
-                    <h1>SuporteTI IA</h1>
-                    <div class="muted">Painel do Usuário</div>
+            <form id="abrirChamadoForm" method="post" action="@Url.Action("Create","Chamado")">
+                @Html.AntiForgeryToken()
+
+                <div class="field">
+                    <label for="Titulo">Assunto</label>
+                    <input id="Titulo" name="Titulo" type="text" required />
                 </div>
-            </div>
 
-            <nav class="nav" role="navigation">
-                <button class="nav-item"><span class="ico">📋</span> Lista de Chamados</button>
-                <button class="nav-item active"><span class="ico">✚</span> Abrir Chamado</button>
-                <button class="nav-item"><span class="ico">🗂️</span> Meus Chamados</button>
-            </nav>
+                <div class="row">
+                    <div>
+                        <div class="field">
+                            <label for="Setor">Setor</label>
+                            <input id="Setor" name="Setor" type="text" />
+                        </div>
+                        <div class="field">
+                            <label for="Descricao">Descrição</label>
+                            <textarea id="Descricao" name="Descricao" rows="6"></textarea>
+                        </div>
+                    </div>
 
-            <div class="sidebar-title">Atalhos</div>
-            <div class="sidebar-shortcuts">
-                <button class="nav-item secondary" id="logoutBtn">Sair</button>
-                <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
-            </div>
-        </aside>
+                    <aside>
+                        <div class="field">
+                            <label for="Prioridade">Prioridade</label>
+                            <select id="Prioridade" name="Prioridade">
+                                <option value="Baixa">Baixa</option>
+                                <option value="Média">Média</option>
+                                <option value="Alta">Alta</option>
+                                <option value="Urgente">Urgente</option>
+                            </select>
+                        </div>
 
-        <main class="main">
-            <section class="panel">
-                <h3>Abrir Chamado</h3>
-                <p class="muted">Preencha os campos abaixo para abrir um novo chamado.</p>
-                <div class="card">
-                    @if (ViewBag.MensagemErro != null)
-                    {
-                        <div style="color:red">@ViewBag.MensagemErro</div>
-                    }
+                        <div class="field">
+                            <label for="Colaborador">Colaborador</label>
+                            <input id="Colaborador" name="Colaborador" type="text" />
+                        </div>
 
-                    <form asp-action="Create" method="post">
-                        @Html.AntiForgeryToken()
-                        <label>Assunto</label>
-                        <input name="Titulo" type="text" placeholder="Digite o assunto do chamado" required />
+                        <div class="actions">
+                            <button type="submit" class="btn">Enviar</button>
+                            <a class="link" href="@Url.Action("Dashboard","Chamado")">← Voltar</a>
+                        </div>
 
-                        <label>Setor</label>
-                        <select name="Setor">
-                            <option>TI / Software</option>
-                            <option>Financeiro / Aplicação</option>
-                            <option>RH / Atendimento</option>
-                        </select>
-
-                        <label>Prioridade</label>
-                        <select name="Prioridade">
-                            <option>Baixa</option>
-                            <option>Média</option>
-                            <option>Alta</option>
-                            <option>Urgente</option>
-                        </select>
-
-                        <label>Colaborador</label>
-                        <input name="Colaborador" type="text" placeholder="Nome do colaborador" />
-
-                        <label>Descrição</label>
-                        <textarea name="Descricao" placeholder="Digite a descrição ou motivo da abertura do chamado"></textarea>
-
-                        <button class="btn-fixed" type="submit">Abrir Chamado</button>
-                    </form>
+                        <p id="msg" style="color:red;margin-top:8px"></p>
+                    </aside>
                 </div>
-            </section>
-        </main>
+            </form>
+        </div>
     </div>
 
     <script>
-        document.getElementById('logoutBtn')?.addEventListener('click', ()=>{ location.href='@Url.Action("Logout", "Login")'; });
+        // Submissão por AJAX (opcional) — se der erro no fetch, formulário normal ainda funciona
+        const form = document.getElementById('abrirChamadoForm');
+        form.addEventListener('submit', async (e)=>{
+          e.preventDefault();
+          const msg = document.getElementById('msg');
+          msg.textContent = '';
+          const fd = new FormData(form);
+          // pega token antiforgery
+          const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+          const token = tokenInput ? tokenInput.value : null;
+          try{
+            const resp = await fetch(form.action, {
+              method: 'POST',
+              headers: token ? { 'RequestVerificationToken': token } : {},
+              body: fd
+            });
+            // se o controller redirect, fetch pode retornar HTML — para simplicidade, recarregamos
+            if(resp.redirected) {
+              window.location.href = resp.url;
+              return;
+            }
+            const json = await resp.json().catch(()=>null);
+            if(json && json.sucesso){
+              // sucesso: vai pra dashboard e mostra novo card (ou recarrega)
+              window.location.href = '@Url.Action("Dashboard", "Chamado")';
+            } else {
+              msg.textContent = (json && json.mensagem) ? json.mensagem : 'Chamado criado (ou erro desconhecido).';
+              // se quiser recarregar: window.location.reload();
+            }
+          } catch(err){
+            // fallback: submit normal
+            form.submit();
+          }
+        });
     </script>
 </body>
 </html>

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using ProjetoTi.Data;
 using ProjetoTi.Models;
 
@@ -6,9 +7,9 @@ namespace ProjetoTi.Controllers
 {
     public class HomeController : Controller
     {
-        private ChamadoRepository _chamadoRepo = new ChamadoRepository();
+        private readonly ChamadoRepository _chamadoRepo = new ChamadoRepository();
 
-        // Dashboard - lista os chamados do usuário
+        // Dashboard - lista chamados do usuário
         public IActionResult Dashboard()
         {
             int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
@@ -17,31 +18,38 @@ namespace ProjetoTi.Controllers
 
             var chamados = _chamadoRepo.ListarChamadosPorUsuario(usuarioId.Value);
             ViewData["UsuarioNome"] = HttpContext.Session.GetString("UsuarioNome");
-            return View(chamados);
+            ViewData["Title"] = "Dashboard";
+
+            return View(chamados); // Layout = _Layout
         }
 
-        // Criar chamado
+        // GET: Abrir chamado
         [HttpGet]
         public IActionResult CriarChamado()
         {
-            return View();
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Index", "Login");
+
+            ViewData["UsuarioNome"] = HttpContext.Session.GetString("UsuarioNome");
+            ViewData["Title"] = "Abrir Chamado";
+            return View(); // Layout = _Layout
         }
 
+        // POST: Abrir chamado
         [HttpPost]
         public IActionResult CriarChamado(string titulo, string descricao)
         {
-            var usuarioIdObj = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioIdObj == null)
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
                 return RedirectToAction("Index", "Login");
-
-            int usuarioId = usuarioIdObj.Value;
 
             var chamado = new Chamado
             {
                 Titulo = titulo,
                 Descricao = descricao,
                 Status = "Aberto",
-                IdUsuario = usuarioId,
+                IdUsuario = usuarioId.Value,
                 DataAbertura = DateTime.Now
             };
 
@@ -49,11 +57,23 @@ namespace ProjetoTi.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        // Atualizar status
+        // Fechar chamado
         public IActionResult FecharChamado(int id)
         {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            if (usuarioId == null)
+                return RedirectToAction("Index", "Login");
+
             _chamadoRepo.AtualizarStatus(id, "Fechado");
             return RedirectToAction("Dashboard");
+        }
+
+        // Privacy
+        public IActionResult Privacy()
+        {
+            ViewData["UsuarioNome"] = HttpContext.Session.GetString("UsuarioNome") ?? "Usuário";
+            ViewData["Title"] = "Privacy";
+            return View(); // Layout = _Layout
         }
     }
 }

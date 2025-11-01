@@ -1,5 +1,7 @@
 ﻿@{
-    Layout = null; // Tela isolada, sem layout compartilhado
+    ViewData["Title"] = "Login";
+    Layout = null;
+    <!-- Login não usa layout da aplicação -->
 }
 
 <!DOCTYPE html>
@@ -8,6 +10,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SuporteTI IA — Login</title>
+
     <style>
         :root {
             --bg: #f6f8fb;
@@ -19,6 +22,7 @@
             --accent: #2563eb;
         }
 
+        /* Reset e layout */
         body, html {
             margin: 0;
             padding: 0;
@@ -120,27 +124,6 @@
                 color: var(--text);
             }
 
-        .row.between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            color: var(--text);
-        }
-
-            .remember input[type="checkbox"] {
-                accent-color: var(--accent);
-                width: 16px;
-                height: 16px;
-                cursor: pointer;
-            }
-
         .btn.primary {
             background: var(--accent);
             color: white;
@@ -153,20 +136,12 @@
             margin-top: 8px;
         }
 
-        .signup, .card-footer {
-            text-align: center;
+        .form-message {
+            margin-top: 8px;
             font-size: 13px;
-            color: var(--muted);
+            color: red;
+            text-align: center;
         }
-
-            .signup a, .link {
-                color: var(--accent);
-                text-decoration: none;
-            }
-
-                .signup a:hover, .link:hover {
-                    text-decoration: underline;
-                }
     </style>
 </head>
 <body>
@@ -183,13 +158,13 @@
             </header>
 
             <section class="card-body">
-                <form asp-controller="Login" asp-action="Index" method="post" novalidate>
+                <form method="post" action="@Url.Action("Index","Login")">
                     <label for="email">E-mail</label>
                     <input id="email" name="email" type="email" placeholder="seu@exemplo.com" required>
 
-                    <label for="senha">Senha</label>
+                    <label for="password">Senha</label>
                     <div class="password-wrapper">
-                        <input id="senha" name="password" type="password" placeholder="••••••••" required minlength="6" autocomplete="new-password">
+                        <input id="password" name="password" type="password" placeholder="••••••••" required>
                         <button type="button" id="togglePassword" aria-label="Mostrar senha">👁️</button>
                     </div>
 
@@ -199,38 +174,16 @@
                         <option value="tecnico">Técnico</option>
                     </select>
 
-                    <div class="row between">
-                        <div class="remember">
-                            <input id="remember" name="remember" type="checkbox">
-                            <label for="remember">Lembrar-me</label>
-                        </div>
-                        <a class="link" href="/RecuperarSenha">Esqueci a senha</a>
-                    </div>
-
-                    <!-- Mensagens de erro -->
-                    @if (TempData["Erro"] != null)
-                    {
-                        <div style="color:red; text-align:center; margin-bottom:10px;">
-                            @TempData["Erro"]
-                        </div>
-                    }
-                    @if (ViewBag.MensagemErro != null)
-                    {
-                        <div style="color:red; text-align:center; margin-bottom:10px;">
-                            @ViewBag.MensagemErro
-                        </div>
-                    }
-
                     <button class="btn primary" type="submit">Entrar</button>
 
-                    <div class="signup">
-                        <span>Não tem conta?</span>
-                        <a class="link" href="/Cadastro">Cadastre-se</a>
-                    </div>
+                    @if (ViewBag.MensagemErro != null)
+                    {
+                        <div class="form-message">@ViewBag.MensagemErro</div>
+                    }
                 </form>
             </section>
 
-            <footer class="card-footer">
+            <footer class="card-footer" style="text-align:center;font-size:13px;color:var(--muted);padding:12px;">
                 <small>Universidade • Projeto de Sistemas • LGPD aplicada</small>
             </footer>
         </div>
@@ -238,9 +191,9 @@
 
     <script>
         const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('senha');
+        const passwordInput = document.getElementById('password');
         togglePassword.addEventListener('click', () => {
-            passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         });
     </script>
 </body>

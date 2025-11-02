@@ -1,36 +1,304 @@
 ﻿@model List<ProjetoTi.Models.Chamado>
-<section id="view-recents" class="panel">
-    <h3>Chamados Recentes</h3>
-    <div class="grid">
-        @foreach (var c in Model)
-        {
-            <div class="card">
-                <h4>@c.Titulo</h4>
-                <p class="muted">@c.Descricao</p>
-                <p><strong>Status:</strong> @c.Status</p>
-                <p><strong>Data:</strong> @c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</p>
-                <span class="badge @(c.Status=="Aberto"?"open":c.Status=="Pendente"?"pending":"closed")">@c.Status</span>
-                @if (c.Status != "Fechado")
-                {
-                    <a href="@Url.Action("FecharChamado","Home",new{ id=c.Id})" class="btn">Fechar</a>
-                }
-            </div>
+@{
+    Layout = null; // Tela isolada
+    var nomeUsuario = ViewBag.NomeUsuario ?? "Usuário";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Usuário — SuporteTI IA</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f97316;
+            --medium: #facc15;
+            --radius: 12px;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
         }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Inter,system-ui,sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .app {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            padding: 16px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 32px);
+        }
+
+        .brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+            .brand .logo {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                background: var(--accent);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 20px;
+            }
+
+            .brand h1 {
+                margin: 0;
+                font-size: 16px;
+            }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+            .nav button {
+                background: transparent;
+                border: 0;
+                padding: 10px 12px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: var(--text);
+                cursor: pointer;
+                font-size: 15px;
+            }
+
+                .nav button.active {
+                    background: rgba(37,99,235,0.12);
+                    color: var(--accent);
+                }
+
+        .sidebar-shortcuts {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .nav-item.secondary {
+            border: 1px solid rgba(37,99,235,0.12);
+            width: 80%;
+            text-align: center;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--accent);
+        }
+
+            .nav-item.secondary:hover {
+                background: rgba(37,99,235,0.12);
+            }
+
+        .footer {
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        /* Main */
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+            .content-header h2 {
+                margin: 0;
+                font-size: 20px;
+            }
+
+            .content-header p {
+                margin: 0;
+                color: var(--muted);
+            }
+
+        button.fixed {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead th {
+            font-weight: 600;
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--muted);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+
+        tbody td {
+            padding: 12px;
+            color: var(--text);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+            .badge.urgente {
+                background: rgba(239,68,68,0.12);
+                color: var(--danger);
+            }
+
+            .badge.alta {
+                background: rgba(249,115,22,0.12);
+                color: var(--warning);
+            }
+
+            .badge.media {
+                background: rgba(250,204,21,0.12);
+                color: var(--medium);
+            }
+
+            .badge.baixa {
+                background: rgba(16,185,129,0.12);
+                color: var(--success);
+            }
+
+        @@media (max-width: 900px) {
+            .app
+
+        {
+            grid-template-columns: 1fr;
+            padding: 12px;
+        }
+
+        }
+        @@media (max-width: 500px) {
+            button .fixed
+
+        {
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">🛠️</div>
+                <div>
+                    <h1>SuporteTI IA</h1>
+                    <div class="muted">@nomeUsuario</div>
+                </div>
+            </div>
+            <nav class="nav">
+                <button class="nav-item active" data-view="meus">🗂️ Meus Chamados</button>
+            </nav>
+            <div class="sidebar-shortcuts">
+                <button class="nav-item secondary" onclick="location.href='/Login/Logout'">Sair</button>
+                <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
+            </div>
+        </aside>
+        <main class="main">
+            <div class="content-header">
+                <div>
+                    <h2>Bem-vindo, @nomeUsuario</h2>
+                    <p class="muted">Aqui você acompanha seus chamados.</p>
+                </div>
+                <div class="top-buttons">
+                    <button class="fixed" onclick="location.href='/Login/Logout'">🚫 Sair</button>
+                </div>
+            </div>
+            <section id="view-meus" class="panel">
+                <h3>Meus Chamados</h3>
+                <p class="muted">Últimos chamados que você abriu.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Assunto</th>
+                            <th>Status</th>
+                            <th>Data Abertura</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model)
+                        {
+                            <tr>
+                                <td>@c.Id</td>
+                                <td>@c.Titulo</td>
+                                <td>
+                                    <span class="badge @(c.Status.ToLower())">@c.Status</span>
+                                </td>
+                                <td>@c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        </main>
     </div>
-</section>
-
-<section id="view-abrir" class="panel" style="display:none;">
-    <h3>Abrir Novo Chamado</h3>
-    <form method="post" action="@Url.Action("CriarChamado","Home")">
-        <label>Título</label>
-        <input type="text" name="titulo" required>
-        <label>Descrição</label>
-        <textarea name="descricao" rows="5" required></textarea>
-        <button type="submit" class="btn">Criar Chamado</button>
-    </form>
-</section>
-
-<section id="view-meus" class="panel" style="display:none;">
-    <h3>Meus Chamados</h3>
-    <p class="muted">Chamados que você abriu.</p>
-</section>
+</body>
+</html>

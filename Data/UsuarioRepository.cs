@@ -1,16 +1,20 @@
 ﻿using Npgsql;
 using ProjetoTi.Models;
+using System;
 
 namespace ProjetoTi.Data
 {
     public class UsuarioRepository
     {
-        private string connectionString = "Host=db.lfvhvtbnnwpqyjzaaovi.supabase.co;Port=5432;Database=postgres;Username=postgres;Password=ProjetoTi123;SSL Mode=Require;Trust Server Certificate=true;";
+        private readonly string connectionString =
+            "Host=db.lfvhvtbnnwpqyjzaaovi.supabase.co;" +
+            "Port=5432;Database=postgres;" +
+            "Username=postgres;Password=ProjetoTi123;" +
+            "SSL Mode=Require;Trust Server Certificate=true;";
 
         // 🔹 Autentica usuário
         public Usuario? Autenticar(string email, string senha)
         {
-            // ✅ Validação antes de conectar
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
                 throw new ArgumentException("Email e senha não podem ser vazios.");
 
@@ -35,7 +39,7 @@ namespace ProjetoTi.Data
                 };
             }
 
-            return null; // se não encontrar usuário
+            return null;
         }
 
         // 🔹 Cria usuário novo

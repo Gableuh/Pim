@@ -9,14 +9,12 @@ namespace ProjetoTi.Controllers
     {
         private readonly UsuarioRepository _repo = new UsuarioRepository();
 
-        // GET: /Login
         [HttpGet]
         public IActionResult Index()
         {
             return View(); // Layout = _LoginLayout.cshtml
         }
 
-        // POST: /Login
         [HttpPost]
         public IActionResult Index(string email, string password, string role)
         {
@@ -39,16 +37,14 @@ namespace ProjetoTi.Controllers
                 return View();
             }
 
-            // Salva dados na sessão
             HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
-            HttpContext.Session.SetString("UsuarioNome", usuario.Nome);
-            HttpContext.Session.SetString("UsuarioPapel", usuario.Papel);
+            HttpContext.Session.SetString("Papel", usuario.Papel);
+            HttpContext.Session.SetString("NomeUsuario", usuario.Nome);
 
-            // Redireciona para Dashboard
-            return RedirectToAction("Dashboard", "Home");
+            // Redireciona para Index que agora escolhe a view correta
+            return RedirectToAction("Index", "Home");
         }
 
-        // Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

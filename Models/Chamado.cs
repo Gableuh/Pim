@@ -12,5 +12,8 @@ namespace ProjetoTi.Models
         public string Status { get; set; } = "aberto";
         public DateTime DataAbertura { get; set; } = DateTime.UtcNow;
         public DateTime? DataFechamento { get; set; }
+        public string NomeUsuario { get; set; } = string.Empty;
+
+
     }
 }

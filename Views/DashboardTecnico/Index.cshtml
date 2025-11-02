@@ -47,14 +47,10 @@
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 32px); /* Mantém altura com padding */
+            height: calc(100vh - 32px);
             position: relative;
             transition: transform 0.3s ease;
         }
-
-            .sidebar.open {
-                transform: translateX(0);
-            }
 
         .brand {
             display: flex;
@@ -277,10 +273,8 @@
                 color: var(--success);
             }
 
-        /* ===== Responsividade ===== */
-        @@media (max-width: 900px)
-
-        {
+        /* Responsividade */
+        @@media (max-width: 900px) {
             .app
 
         {
@@ -308,9 +302,7 @@
 
         }
 
-        @@media (max-width: 500px)
-
-        {
+        @@media (max-width: 500px) {
             .panel
 
         {
@@ -349,6 +341,7 @@
                 <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
             </div>
         </aside>
+
         <main class="main">
             <div class="content-header">
                 <div>
@@ -359,6 +352,7 @@
                     <button class="fixed">🚫 Desconectar</button>
                 </div>
             </div>
+
             <div class="search-balloon">
                 <h4>Procurar Chamado</h4>
                 <div class="search-bar">
@@ -377,6 +371,7 @@
                     <button id="searchBtn">Pesquisar</button>
                 </div>
             </div>
+
             <section id="view-recents" class="panel">
                 <h3>Chamados Recentes</h3>
                 <p class="muted">Últimos chamados abertos no sistema.</p>
@@ -417,6 +412,7 @@
                     </tbody>
                 </table>
             </section>
+
             <section id="view-meus" class="panel" style="display:none;">
                 <h3>Meus Chamados</h3>
                 <p class="muted">Chamados que você está atendendo.</p>
@@ -435,8 +431,10 @@
                 Object.keys(views).forEach(k=>views[k].style.display = (k===view)?'':'none');
             });
         });
+
         document.getElementById('logoutBtn')?.addEventListener('click', ()=>alert('Logout simulado'));
         document.querySelector('.top-buttons .fixed')?.addEventListener('click', ()=>alert('Logout simulado'));
+
         document.getElementById('searchBtn').addEventListener('click', ()=>{
             const id = document.getElementById('searchId').value.toLowerCase();
             const assunto = document.getElementById('searchAssunto').value.toLowerCase();

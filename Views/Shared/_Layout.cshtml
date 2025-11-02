@@ -1,48 +1,50 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var usuarioNome = ViewData["NomeUsuario"]?.ToString() ?? "Usuário";
+    var usuarioTipo = ViewData["TipoUsuario"]?.ToString() ?? "Usuario"; // "Usuario" ou "Tecnico"
+}
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@ViewData["Title"] - SuporteTI IA</title>
+    <title>@ViewData["Title"] — SuporteTI IA</title>
     <style>
         :root {
             --bg: #f6f8fb;
             --card: #ffffff;
-            --header-bg: #2563eb;
-            --text: #111827;
-            --header-text: #ffffff;
-            --muted: #6b7280;
             --accent: #2563eb;
+            --text: #111827;
+            --muted: #6b7280;
             --success: #10b981;
             --danger: #ef4444;
-            --radius: 12px;
             --shadow: 0 6px 18px rgba(16,24,40,0.06);
+            --radius: 12px;
+            --header-bg: #2563eb;
+            --header-text: #fff;
+            --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
         }
 
-        /* Reset e fontes */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', system-ui, sans-serif;
+            font-family: var(--font);
         }
 
         body {
             background: var(--bg);
             color: var(--text);
+            min-height: 100vh;
         }
 
-        /* Layout principal */
         .app {
             display: grid;
             grid-template-columns: 260px 1fr;
             gap: 24px;
             padding: 28px;
-            min-height: 100vh;
             transition: 0.3s ease;
         }
 
-        /* Sidebar */
         .sidebar {
             background: var(--card);
             border-radius: var(--radius);
@@ -50,15 +52,14 @@
             padding: 18px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            transition: 0.25s ease;
             position: relative;
-            transition: transform 0.25s ease;
         }
 
             .sidebar .brand {
                 display: flex;
+                flex-direction: column;
                 align-items: center;
-                gap: 12px;
                 margin-bottom: 20px;
             }
 
@@ -67,19 +68,32 @@
                     height: 44px;
                     background: var(--accent);
                     color: white;
+                    font-weight: bold;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-weight: bold;
                     border-radius: 10px;
+                    margin-bottom: 12px;
+                    font-size: 24px;
+                }
+
+                .sidebar .brand h1 {
+                    font-size: 22px;
+                    margin-bottom: 4px;
+                }
+
+                .sidebar .brand p {
+                    font-size: 14px;
+                    color: var(--muted);
                 }
 
         .nav {
             display: flex;
             flex-direction: column;
             gap: 8px;
+            margin-bottom: auto;
         }
-
+            /* opções no topo */
             .nav button {
                 border: none;
                 background: transparent;
@@ -95,7 +109,7 @@
             }
 
                 .nav button:hover {
-                    background: rgba(37,99,235,0.12);
+                    background: rgba(99,102,241,0.06);
                 }
 
                 .nav button.active {
@@ -103,7 +117,6 @@
                     color: var(--accent);
                 }
 
-        /* Main content */
         .main {
             display: flex;
             flex-direction: column;
@@ -124,7 +137,7 @@
             cursor: pointer;
         }
 
-        h2, h3 {
+        h2, h3, h4 {
             margin: 0;
         }
 
@@ -136,7 +149,6 @@
             transition: 0.3s ease;
         }
 
-        /* Cards de chamados */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
@@ -159,11 +171,6 @@
                 transform: translateY(-4px);
             }
 
-            .card h4 {
-                margin: 0;
-                font-size: 16px;
-            }
-
         .badge {
             display: inline-block;
             padding: 4px 10px;
@@ -171,17 +178,17 @@
             font-size: 12px;
         }
 
-            .badge.open {
+            .badge.aberto {
                 background: rgba(34,197,94,0.15);
                 color: var(--success);
             }
 
-            .badge.pending {
+            .badge.pendente {
                 background: rgba(250,204,21,0.15);
                 color: #b45309;
             }
 
-            .badge.closed {
+            .badge.fechado {
                 background: rgba(239,68,68,0.15);
                 color: var(--danger);
             }
@@ -220,63 +227,67 @@
             z-index: 100;
         }
 
-        /* Responsividade */
         @@media (max-width:900px) {
-            .app
-
-        {
-            grid-template-columns: 1fr;
-            padding: 16px;
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            transform: translateX(-110%);
-            width: 240px;
-            z-index: 50;
-        }
-
-            .sidebar.open {
-                transform: translateX(0);
+            .app {
+                grid-template-columns: 1fr;
+                padding: 16px;
             }
 
-        .hamburger {
-            display: inline-block;
-        }
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-110%);
+                width: 240px;
+                z-index: 50;
+            }
 
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .hamburger {
+                display: inline-block;
+            }
         }
     </style>
 </head>
 <body>
     <button class="fixed" onclick="location.href='@Url.Action("Logout","Login")'">🚪 Sair</button>
+
     <div class="app">
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div>
-                <div class="brand">
-                    <div class="logo">👤</div>
-                    <div>
-                        <h1>SuporteTI IA</h1>
-                        <p class="muted">Painel do Usuário</p>
-                    </div>
-                </div>
-                <nav class="nav">
+            <div class="brand">
+                <div class="logo">👤</div>
+                <h1>SuporteTI IA</h1>
+                <p>@usuarioNome</p>
+            </div>
+            <nav class="nav">
+                @if (usuarioTipo == "Usuario")
+                {
                     <button class="nav-item active" data-view="recents">📋 Chamados Recentes</button>
                     <button class="nav-item" data-view="abrir">✚ Abrir Chamado</button>
                     <button class="nav-item" data-view="meus">🗂️ Meus Chamados</button>
-                </nav>
-            </div>
+                }
+                else
+                {
+                    <button class="nav-item active" data-view="todos">📋 Chamados Recentes</button>
+                }
+            </nav>
         </aside>
+
+        <!-- Main -->
         <main class="main">
             <header class="topbar">
                 <button class="hamburger" id="toggleSidebar">☰</button>
                 <div>
-                    <h2>@ViewData["UsuarioNome"]</h2>
-                    <p class="muted">Painel de suporte e abertura de chamados</p>
+                    <h2>Bem-vindo, @usuarioNome</h2>
+                    <p class="muted">@((usuarioTipo == "Usuario") ? "Painel de suporte e abertura de chamados" : "Painel Técnico - Filtrar e gerenciar chamados")</p>
                 </div>
             </header>
+
             @RenderBody()
         </main>
     </div>
@@ -285,19 +296,21 @@
         const sidebar = document.getElementById('sidebar');
         document.getElementById('toggleSidebar').addEventListener('click', ()=>{ sidebar.classList.toggle('open'); });
 
-        // Navegação entre seções (apenas se necessário para páginas SPA)
         const navButtons = document.querySelectorAll('.nav-item');
         const views = {
             recents: document.getElementById('view-recents'),
             abrir: document.getElementById('view-abrir'),
-            meus: document.getElementById('view-meus')
+            meus: document.getElementById('view-meus'),
+            todos: document.getElementById('view-todos')
         };
         navButtons.forEach(btn=>{
             btn.addEventListener('click', ()=>{
                 navButtons.forEach(b=>b.classList.remove('active'));
                 btn.classList.add('active');
                 const view = btn.dataset.view;
-                Object.keys(views).forEach(k=>{ if(views[k]) views[k].style.display = (k===view)?'':'none'; });
+                Object.keys(views).forEach(k=>{
+                    if(views[k]) views[k].style.display = (k===view)?'':'none';
+                });
             });
         });
     </script>

@@ -25,6 +25,7 @@
             --success: #16a34a;
             --danger: #dc2626;
             --border: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         body {
@@ -36,7 +37,7 @@
             min-height: 100vh;
         }
 
-        /* SIDEBAR TRANSPARENTE */
+        /* SIDEBAR */
         .sidebar {
             width: 240px;
             display: flex;
@@ -44,6 +45,8 @@
             transition: transform 0.3s ease;
             border-right: 1px solid var(--border);
             backdrop-filter: blur(8px);
+            position: relative;
+            z-index: 50;
         }
 
         .sidebar-header {
@@ -73,12 +76,14 @@
                 color: var(--accent);
             }
 
-        /* CONTEÚDO PRINCIPAL */
+        /* MAIN */
         .main {
             flex: 1;
             display: flex;
             flex-direction: column;
             padding: 1.5rem;
+            position: relative;
+            z-index: 10;
         }
 
         .topbar {
@@ -94,11 +99,17 @@
         }
 
         .logout {
-            background: transparent;
+            background: var(--accent);
             border: none;
-            color: var(--danger);
+            color: white;
             font-weight: 600;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
             cursor: pointer;
+            z-index: 300;
+            position: fixed;
+            top: 16px;
+            right: 16px;
         }
 
         .filters {
@@ -139,7 +150,7 @@
             background: var(--card-bg);
             border-radius: 12px;
             padding: 1.2rem;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
             transition: transform 0.2s;
             position: relative;
         }
@@ -185,34 +196,7 @@
                 color: white;
             }
 
-        /* MOBILE */
-        @@media (max-width: 768px) {
-            .sidebar
-
-        {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateX(-100%);
-            z-index: 20;
-        }
-
-        .sidebar.open {
-            transform: translateX(0);
-        }
-
-        .hamburger {
-            display: block;
-        }
-
-        .main {
-            margin-left: 0;
-        }
-
-        }
-
+        /* HAMBURGER */
         .hamburger {
             display: none;
             font-size: 1.5rem;
@@ -220,11 +204,51 @@
             border: none;
             cursor: pointer;
             margin-right: 1rem;
+            color: #000;
+        }
+
+        /* MOBILE */
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                transform: translateX(-100%);
+                z-index: 100;
+                width: 240px;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .hamburger {
+                display: block;
+            }
+
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 50;
+                display: none;
+            }
+
+                .overlay.show {
+                    display: block;
+                }
         }
     </style>
 </head>
 
 <body>
+    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">🛠️ Painel Técnico</div>
         <div class="nav">
@@ -233,13 +257,16 @@
         </div>
     </aside>
 
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main -->
     <main class="main">
         <div class="topbar">
             <div style="display:flex;align-items:center;">
                 <button class="hamburger" id="toggleSidebar">☰</button>
                 <span class="user-info">Bem-vindo, @usuarioNome 👋</span>
             </div>
-            <button class="logout" onclick="window.location.href='@Url.Action("Index","Login")'">Sair</button>
         </div>
 
         <h2>Todos os Chamados</h2>
@@ -280,10 +307,33 @@
         </div>
     </main>
 
+    <!-- Botão Sair -->
+    <button class="logout" onclick="window.location.href='@Url.Action("Index","Login")'">🚪 Sair</button>
+
     <script>
         const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
         const toggleSidebar = document.getElementById("toggleSidebar");
-        toggleSidebar.addEventListener("click", () => sidebar.classList.toggle("open"));
+
+        function openSidebar() {
+            sidebar.classList.add("open");
+            overlay.classList.add("show");
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("show");
+        }
+
+        toggleSidebar.addEventListener("click", () => {
+            if (sidebar.classList.contains("open")) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+
+        overlay.addEventListener("click", () => closeSidebar());
     </script>
 </body>
 </html>

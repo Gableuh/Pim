@@ -39,6 +39,7 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .app {
@@ -49,14 +50,15 @@
             transition: 0.3s ease;
         }
 
-        /* sidebar transparente */
+        /* Sidebar */
         .sidebar {
             background: transparent;
             border-radius: var(--radius);
             padding: 18px;
             display: flex;
             flex-direction: column;
-            backdrop-filter: none;
+            transition: transform 0.3s ease;
+            z-index: 200;
         }
 
         .brand {
@@ -105,6 +107,7 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                transition: background 0.2s;
             }
 
                 .nav button:hover {
@@ -116,6 +119,7 @@
                     color: var(--accent);
                 }
 
+        /* Conteúdo principal */
         .main {
             display: flex;
             flex-direction: column;
@@ -145,7 +149,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 16px;
             margin-top: 14px;
         }
@@ -197,8 +201,14 @@
             cursor: pointer;
             font-weight: 500;
             align-self: start;
+            transition: background 0.2s;
         }
 
+            .btn:hover {
+                background: #1e4ed8;
+            }
+
+        /* Botão fixo de sair */
         .fixed {
             position: fixed;
             top: 16px;
@@ -210,42 +220,65 @@
             color: white;
             cursor: pointer;
             font-weight: 600;
-            z-index: 100;
+            z-index: 300;
+            box-shadow: var(--shadow);
         }
 
-        /* mobile */
+        /* Overlay (fundo escurecido quando sidebar aberta) */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+            .overlay.show {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        /* Mobile */
         @@media (max-width: 900px) {
-            .app {
-                grid-template-columns: 1fr;
-                padding: 16px;
+            .app
+
+        {
+            grid-template-columns: 1fr;
+            padding: 16px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            transform: translateX(-110%);
+            width: 240px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+        }
+
+            .sidebar.open {
+                transform: translateX(0);
             }
 
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                transform: translateX(-110%);
-                width: 240px;
-                z-index: 50;
-                background: rgba(255,255,255,0.85);
-            }
+        .hamburger {
+            display: inline-block;
+        }
 
-                .sidebar.open {
-                    transform: translateX(0);
-                }
-
-            .hamburger {
-                display: inline-block;
-            }
         }
     </style>
 </head>
 <body>
     <button class="fixed" onclick="location.href='@Url.Action("Logout","Login")'">🚪 Sair</button>
 
+    <div class="overlay" id="overlay"></div>
+
     <div class="app">
-        <!-- Sidebar (transparente) -->
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="brand">
                 <div class="logo">👤</div>
@@ -272,7 +305,7 @@
                 </div>
             </header>
 
-            <!-- Todos os Chamados (padrão) -->
+            <!-- Todos os Chamados -->
             <section id="view-todos" class="panel">
                 <h3>Todos os Chamados</h3>
                 <div class="grid" id="grid-todos">
@@ -307,7 +340,7 @@
                 </form>
             </section>
 
-            <!-- Meus chamados (filtra localmente) -->
+            <!-- Meus chamados -->
             <section id="view-meus" class="panel" style="display:none;">
                 <h3>Meus Chamados</h3>
                 <div class="grid" id="grid-meus">
@@ -332,11 +365,21 @@
     </div>
 
     <script>
-        // sidebar toggle (mobile)
         const sidebar = document.getElementById('sidebar');
-        document.getElementById('toggleSidebar')?.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const overlay = document.getElementById('overlay');
 
-        // SPA-like nav between sections (client-side)
+        toggleSidebar?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        });
+
+        // Navegação entre seções
         const navButtons = document.querySelectorAll('.nav-item');
         const views = {
             todos: document.getElementById('view-todos'),
@@ -344,12 +387,12 @@
             meus: document.getElementById('view-meus')
         };
 
-        navButtons.forEach(btn=>{
-            btn.addEventListener('click', ()=>{
-                navButtons.forEach(b=>b.classList.remove('active'));
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                navButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 const view = btn.dataset.view;
-                Object.keys(views).forEach(k=> views[k].style.display = (k===view ? '' : 'none'));
+                Object.keys(views).forEach(k => views[k].style.display = (k === view ? '' : 'none'));
             });
         });
     </script>

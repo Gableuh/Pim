@@ -3,6 +3,7 @@ using ProjetoTi.Data;
 using ProjetoTi.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ProjetoTi.Controllers
 {
@@ -11,32 +12,29 @@ namespace ProjetoTi.Controllers
         private readonly ChamadoRepository _chamadoRepo = new ChamadoRepository();
         private readonly UsuarioRepository _usuarioRepo = new UsuarioRepository();
 
-        // 🔹 Dashboard inicial (agora: todos os chamados aparecem por padrão para qualquer usuário;
-        // a view faz a segmentação "Meus Chamados" por nome)
+        // 🔹 Dashboard inicial
+        [HttpGet]
         [HttpGet]
         public IActionResult Index()
         {
-            var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId") ?? 0;
             var usuarioNome = HttpContext.Session.GetString("NomeUsuario") ?? "Usuário";
+            var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
 
             ViewBag.NomeUsuario = usuarioNome;
+            ViewBag.Papel = papel;
 
-            // Sempre traz TODOS os chamados (técnico e usuário verão todos no painel principal).
+            // Traz todos os chamados para todos os usuários
             var chamados = _chamadoRepo.ListarTodosChamados();
 
             // Garante que NomeUsuario nunca seja nulo
             foreach (var c in chamados)
                 c.NomeUsuario ??= "Usuário";
 
-            // Se for técnico, renderiza a view técnica (se preferir manter uma view separada);
-            // aqui por compatibilidade seguimos enviando cada perfil para sua view específica se desejar.
             if (papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
-            {
                 return View("~/Views/DashboardTecnico/Index.cshtml", chamados);
-            }
 
-            // Para usuário comum, renderiza o dashboard do usuário (com todos os chamados no Model).
+            // Para usuários comuns, enviar todos os chamados (visualização) para “Todos os Chamados”
             return View("~/Views/Home/Dashboard.cshtml", chamados);
         }
 
@@ -78,7 +76,6 @@ namespace ProjetoTi.Controllers
             var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId") ?? 0;
 
-            // Só técnico pode fechar qualquer chamado; usuário só fecha os seus.
             if (!papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase) && chamado.IdUsuario != usuarioId)
             {
                 TempData["MensagemErro"] = "Você não tem permissão para fechar este chamado.";
@@ -90,17 +87,15 @@ namespace ProjetoTi.Controllers
             return RedirectToAction("Index");
         }
 
+        // 🔹 Filtro de chamados para técnico e usuário
         [HttpPost]
-        public IActionResult PesquisarChamados(string id, string assunto, string data, string setor, string prioridade, string colaborador)
+        public IActionResult PesquisarChamados(string id, string assunto, string data, string prioridade, string colaborador)
         {
+            var chamados = _chamadoRepo.ListarTodosChamados();
             var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
-            if (!papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
-                return RedirectToAction("Index"); // apenas técnicos usam esse endpoint no servidor
 
-            var todosChamados = _chamadoRepo.ListarTodosChamados();
             var resultados = new List<Chamado>();
-
-            foreach (var c in todosChamados)
+            foreach (var c in chamados)
             {
                 c.NomeUsuario ??= "Usuário";
 
@@ -114,7 +109,11 @@ namespace ProjetoTi.Controllers
                     resultados.Add(c);
             }
 
-            return View("~/Views/DashboardTecnico/Index.cshtml", resultados);
+            if (papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
+                return View("~/Views/DashboardTecnico/Index.cshtml", resultados);
+
+            // Usuário comum: apenas visualização dos chamados filtrados
+            return View("~/Views/Home/Dashboard.cshtml", resultados);
         }
     }
-}
+    }

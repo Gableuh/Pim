@@ -14,6 +14,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>@ViewData["Title"] — SuporteTI IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
     <style>
         :root {
             --bg: #f6f8fb;
@@ -25,7 +27,7 @@
             --danger: #ef4444;
             --shadow: 0 6px 18px rgba(16,24,40,0.06);
             --radius: 12px;
-            --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            --font: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
         }
 
         * {
@@ -138,6 +140,7 @@
             border: 0;
             font-size: 22px;
             cursor: pointer;
+            color: #000;
         }
 
         .panel {
@@ -149,7 +152,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
             gap: 16px;
             margin-top: 14px;
         }
@@ -162,11 +165,20 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            position: relative;
             transition: transform 0.15s;
         }
 
             .card:hover {
                 transform: translateY(-4px);
+            }
+
+            .card .id {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+                color: rgba(107,114,128,0.4);
+                font-weight: 600;
             }
 
         .badge {
@@ -208,6 +220,21 @@
                 background: #1e4ed8;
             }
 
+        /* Filtro */
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+            .filters input, .filters select {
+                padding: 0.6rem 0.8rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-family: inherit;
+            }
+
         /* Botão fixo de sair */
         .fixed {
             position: fixed;
@@ -224,11 +251,11 @@
             box-shadow: var(--shadow);
         }
 
-        /* Overlay (fundo escurecido quando sidebar aberta) */
+        /* Overlay */
         .overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0,0,0,0.4);
             backdrop-filter: blur(2px);
             z-index: 150;
             opacity: 0;
@@ -242,7 +269,7 @@
             }
 
         /* Mobile */
-        @@media (max-width: 900px) {
+        @@media (max-width:900px) {
             .app
 
         {
@@ -257,8 +284,8 @@
             bottom: 0;
             transform: translateX(-110%);
             width: 240px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.1);
+            background: rgba(255,255,255,0.9);
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
         }
 
             .sidebar.open {
@@ -273,8 +300,10 @@
     </style>
 </head>
 <body>
+    <!-- Botão sair -->
     <button class="fixed" onclick="location.href='@Url.Action("Logout","Login")'">🚪 Sair</button>
 
+    <!-- Overlay -->
     <div class="overlay" id="overlay"></div>
 
     <div class="app">
@@ -285,7 +314,6 @@
                 <h1>SuporteTI IA</h1>
                 <p>@usuarioNome</p>
             </div>
-
             <nav class="nav">
                 <button class="nav-item active" data-view="todos">📋 Todos os Chamados</button>
                 <button class="nav-item" data-view="abrir">➕ Abrir Chamado</button>
@@ -308,11 +336,23 @@
             <!-- Todos os Chamados -->
             <section id="view-todos" class="panel">
                 <h3>Todos os Chamados</h3>
+                <form method="post" action="@Url.Action("PesquisarChamados","Home")" class="filters">
+                    <input type="text" name="id" placeholder="ID" />
+                    <input type="text" name="assunto" placeholder="Assunto" />
+                    <input type="date" name="data" />
+                    <select name="prioridade">
+                        <option value="">Status</option>
+                        <option value="Aberto">Aberto</option>
+                        <option value="Fechado">Fechado</option>
+                    </select>
+                    <button type="submit" class="btn">Filtrar</button>
+                </form>
+
                 <div class="grid" id="grid-todos">
                     @foreach (var c in Model)
                     {
-                        <div class="card" data-nome="@c.NomeUsuario">
-                            <p><strong>ID:</strong> @c.Id</p>
+                        <div class="card">
+                            <span class="id">#@c.Id</span>
                             <h4>@c.Titulo</h4>
                             <p class="muted">@c.Descricao</p>
                             <p><strong>Usuário:</strong> @c.NomeUsuario</p>
@@ -343,11 +383,11 @@
             <!-- Meus chamados -->
             <section id="view-meus" class="panel" style="display:none;">
                 <h3>Meus Chamados</h3>
-                <div class="grid" id="grid-meus">
+                <div class="grid">
                     @foreach (var c in Model.Where(x => x.NomeUsuario == usuarioNome))
                     {
                         <div class="card">
-                            <p><strong>ID:</strong> @c.Id</p>
+                            <span class="id">#@c.Id</span>
                             <h4>@c.Titulo</h4>
                             <p class="muted">@c.Descricao</p>
                             <p><strong>Status:</strong> <span class="badge @(c.Status.ToLower())">@c.Status</span></p>
@@ -373,7 +413,6 @@
             sidebar.classList.toggle('open');
             overlay.classList.toggle('show');
         });
-
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('open');
             overlay.classList.remove('show');
@@ -386,7 +425,6 @@
             abrir: document.getElementById('view-abrir'),
             meus: document.getElementById('view-meus')
         };
-
         navButtons.forEach(btn => {
             btn.addEventListener('click', () => {
                 navButtons.forEach(b => b.classList.remove('active'));

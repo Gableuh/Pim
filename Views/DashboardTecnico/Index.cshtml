@@ -14,6 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"]</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
     <style>
         :root {
             --bg: #f6f8fb;
@@ -35,24 +36,21 @@
             min-height: 100vh;
         }
 
-        /* Sidebar transparente */
+        /* SIDEBAR TRANSPARENTE */
         .sidebar {
             width: 240px;
             display: flex;
             flex-direction: column;
-            transition: width 0.3s;
+            transition: transform 0.3s ease;
+            border-right: 1px solid var(--border);
+            backdrop-filter: blur(8px);
         }
-
-            .sidebar.collapsed {
-                width: 70px;
-            }
 
         .sidebar-header {
             font-weight: 600;
             font-size: 1.2rem;
             padding: 1.5rem;
             text-align: center;
-            border-bottom: 1px solid var(--border);
         }
 
         .nav {
@@ -75,7 +73,7 @@
                 color: var(--accent);
             }
 
-        /* Conteúdo principal */
+        /* CONTEÚDO PRINCIPAL */
         .main {
             flex: 1;
             display: flex;
@@ -90,10 +88,24 @@
             margin-bottom: 1.5rem;
         }
 
+        .user-info {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .logout {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
         .filters {
             display: flex;
             gap: 0.8rem;
             flex-wrap: wrap;
+            margin-top: 1rem;
         }
 
         input[type="text"], input[type="date"], select {
@@ -173,24 +185,41 @@
                 color: white;
             }
 
+        /* MOBILE */
         @@media (max-width: 768px) {
             .sidebar
 
         {
             position: fixed;
+            left: 0;
+            top: 0;
             height: 100%;
-            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
             transform: translateX(-100%);
+            z-index: 20;
         }
 
         .sidebar.open {
             transform: translateX(0);
         }
 
+        .hamburger {
+            display: block;
+        }
+
         .main {
             margin-left: 0;
         }
 
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            margin-right: 1rem;
         }
     </style>
 </head>
@@ -200,25 +229,33 @@
         <div class="sidebar-header">🛠️ Painel Técnico</div>
         <div class="nav">
             <div class="nav-item active" id="btn-todos">Todos os Chamados</div>
+            <div class="nav-item" onclick="window.location.href='@Url.Action("Index", "Cadastro")'">Cadastrar Usuários</div>
         </div>
     </aside>
 
     <main class="main">
         <div class="topbar">
-            <h2>Todos os Chamados</h2>
-            <form method="post" action="@Url.Action("PesquisarChamados","Home")" class="filters">
-                <input type="text" name="id" placeholder="ID" />
-                <input type="text" name="assunto" placeholder="Assunto" />
-                <input type="text" name="colaborador" placeholder="Colaborador" />
-                <input type="date" name="data" />
-                <select name="prioridade">
-                    <option value="">Status</option>
-                    <option value="Aberto">Aberto</option>
-                    <option value="Fechado">Fechado</option>
-                </select>
-                <button type="submit">Filtrar</button>
-            </form>
+            <div style="display:flex;align-items:center;">
+                <button class="hamburger" id="toggleSidebar">☰</button>
+                <span class="user-info">Bem-vindo, @usuarioNome 👋</span>
+            </div>
+            <button class="logout" onclick="window.location.href='@Url.Action("Index","Login")'">Sair</button>
         </div>
+
+        <h2>Todos os Chamados</h2>
+
+        <form method="post" action="@Url.Action("PesquisarChamados","Home")" class="filters">
+            <input type="text" name="id" placeholder="ID" />
+            <input type="text" name="assunto" placeholder="Assunto" />
+            <input type="text" name="colaborador" placeholder="Colaborador" />
+            <input type="date" name="data" />
+            <select name="prioridade">
+                <option value="">Status</option>
+                <option value="Aberto">Aberto</option>
+                <option value="Fechado">Fechado</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
 
         <div class="grid">
             @foreach (var c in Model)
@@ -245,7 +282,8 @@
 
     <script>
         const sidebar = document.getElementById("sidebar");
+        const toggleSidebar = document.getElementById("toggleSidebar");
+        toggleSidebar.addEventListener("click", () => sidebar.classList.toggle("open"));
     </script>
 </body>
 </html>
-

@@ -11,7 +11,8 @@ namespace ProjetoTi.Controllers
         private readonly ChamadoRepository _chamadoRepo = new ChamadoRepository();
         private readonly UsuarioRepository _usuarioRepo = new UsuarioRepository();
 
-        // 🔹 Dashboard inicial (diferencia usuário e técnico pelo Papel)
+        // 🔹 Dashboard inicial (agora: todos os chamados aparecem por padrão para qualquer usuário;
+        // a view faz a segmentação "Meus Chamados" por nome)
         [HttpGet]
         public IActionResult Index()
         {
@@ -21,24 +22,22 @@ namespace ProjetoTi.Controllers
 
             ViewBag.NomeUsuario = usuarioNome;
 
+            // Sempre traz TODOS os chamados (técnico e usuário verão todos no painel principal).
+            var chamados = _chamadoRepo.ListarTodosChamados();
+
+            // Garante que NomeUsuario nunca seja nulo
+            foreach (var c in chamados)
+                c.NomeUsuario ??= "Usuário";
+
+            // Se for técnico, renderiza a view técnica (se preferir manter uma view separada);
+            // aqui por compatibilidade seguimos enviando cada perfil para sua view específica se desejar.
             if (papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
             {
-                var chamados = _chamadoRepo.ListarTodosChamados();
-                foreach (var c in chamados)
-                    c.NomeUsuario ??= "Usuário";
-
-                // Redireciona para a view do técnico
                 return View("~/Views/DashboardTecnico/Index.cshtml", chamados);
             }
-            else
-            {
-                var chamados = _chamadoRepo.ListarChamadosPorUsuario(usuarioId);
-                foreach (var c in chamados)
-                    c.NomeUsuario ??= usuarioNome;
 
-                // Redireciona para a view do usuário
-                return View("~/Views/Home/Dashboard.cshtml", chamados);
-            }
+            // Para usuário comum, renderiza o dashboard do usuário (com todos os chamados no Model).
+            return View("~/Views/Home/Dashboard.cshtml", chamados);
         }
 
         [HttpPost]
@@ -79,6 +78,7 @@ namespace ProjetoTi.Controllers
             var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId") ?? 0;
 
+            // Só técnico pode fechar qualquer chamado; usuário só fecha os seus.
             if (!papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase) && chamado.IdUsuario != usuarioId)
             {
                 TempData["MensagemErro"] = "Você não tem permissão para fechar este chamado.";
@@ -95,7 +95,7 @@ namespace ProjetoTi.Controllers
         {
             var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
             if (!papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
-                return RedirectToAction("Index");
+                return RedirectToAction("Index"); // apenas técnicos usam esse endpoint no servidor
 
             var todosChamados = _chamadoRepo.ListarTodosChamados();
             var resultados = new List<Chamado>();

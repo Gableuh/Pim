@@ -86,5 +86,53 @@ namespace ProjetoTi.Data
             insertCmd.Parameters.AddWithValue("@p", "colaborador");
             insertCmd.ExecuteNonQuery();
         }
+
+        // 🔹 Listar todos os usuários (para painel do técnico)
+        public List<Usuario> ListarUsuarios()
+        {
+            var lista = new List<Usuario>();
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+
+            var sql = @"SELECT id, nome, email, papel FROM usuarios ORDER BY id DESC";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new Usuario
+                {
+                    Id = reader.GetInt32(reader.GetOrdinal("id")),
+                    Nome = reader.GetString(reader.GetOrdinal("nome")),
+                    Email = reader.GetString(reader.GetOrdinal("email")),
+                    Papel = reader.IsDBNull(reader.GetOrdinal("papel")) ? "colaborador" : reader.GetString(reader.GetOrdinal("papel"))
+                });
+            }
+
+            return lista;
+        }
+
+        // 🔹 Excluir usuário por id
+        public bool ExcluirUsuario(int id)
+        {
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+
+            // opcional: aqui não bloqueamos exclusão de técnicos — decisão do negócio
+            var sql = "DELETE FROM usuarios WHERE id = @id";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@id", id);
+
+            try
+            {
+                return cmd.ExecuteNonQuery() > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Erro ao excluir usuário: " + ex.Message);
+                return false;
+            }
+        }
+
     }
 }

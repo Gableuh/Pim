@@ -52,7 +52,10 @@ namespace ProjetoTi.Controllers
                 Descricao = descricao,
                 Status = "Aberto",
                 IdUsuario = usuarioId,
-                DataAbertura = DateTime.Now
+                DataAbertura = TimeZoneInfo.ConvertTimeFromUtc(
+                    DateTime.UtcNow,
+                    TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time")
+    )
             };
 
             _chamadoRepo.CriarChamado(chamado);

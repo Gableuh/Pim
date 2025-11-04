@@ -19,7 +19,8 @@ namespace ProjetoTi.Data
 
             var sql = @"
                 INSERT INTO chamados (titulo, descricao, status, data_abertura, id_usuario, id_tecnico)
-                VALUES (@t, @d, @s, NOW(), @u, @tec)";
+                VALUES (@t, @d, @s, @data, @u, @tec)";
+
 
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@t", chamado.Titulo);
@@ -27,6 +28,12 @@ namespace ProjetoTi.Data
             cmd.Parameters.AddWithValue("@s", chamado.Status);
             cmd.Parameters.AddWithValue("@u", chamado.IdUsuario);
             cmd.Parameters.AddWithValue("@tec", (object?)chamado.IdTecnico ?? DBNull.Value);
+
+            // ✅ Hora correta do Brasil
+            cmd.Parameters.AddWithValue("@data",
+                TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow,
+                TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"))
+            );
 
             try
             {

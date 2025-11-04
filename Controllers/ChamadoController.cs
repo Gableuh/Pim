@@ -73,7 +73,11 @@ namespace ProjetoTi.Controllers
                 Descricao = fullDesc,
                 Status = "aberto",
                 IdUsuario = userId,
-                DataAbertura = DateTime.Now
+                DataAbertura = TimeZoneInfo.ConvertTimeFromUtc(
+                     DateTime.UtcNow,
+                     TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time")
+)
+
             };
 
             try

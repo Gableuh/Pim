@@ -252,10 +252,18 @@
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">🛠️ Painel Técnico</div>
         <div class="nav">
-            <div class="nav-item active" id="btn-todos">Todos os Chamados</div>
-            <div class="nav-item" onclick="window.location.href='@Url.Action("Index", "Cadastro")'">Cadastrar Usuários</div>
+            <!-- Link para Todos os Chamados -->
+            <div class="nav-item active" id="btn-todos" onclick="window.location.href='@Url.Action("Index", "Home")'">
+                🗂️ Todos os Chamados
+            </div>
+
+            <!-- Link para Gerenciar Usuários -->
+            <div class="nav-item" onclick="window.location.href='@Url.Action("Usuarios", "Home")'">
+                👥 Gerenciar Usuários
+            </div>
         </div>
     </aside>
+
 
     <!-- Overlay -->
     <div class="overlay" id="overlay"></div>

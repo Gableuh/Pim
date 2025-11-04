@@ -14,7 +14,6 @@ namespace ProjetoTi.Controllers
 
         // 🔹 Dashboard inicial
         [HttpGet]
-        [HttpGet]
         public IActionResult Index()
         {
             var usuarioId = HttpContext.Session.GetInt32("UsuarioId") ?? 0;
@@ -24,20 +23,18 @@ namespace ProjetoTi.Controllers
             ViewBag.NomeUsuario = usuarioNome;
             ViewBag.Papel = papel;
 
-            // Traz todos os chamados para todos os usuários
             var chamados = _chamadoRepo.ListarTodosChamados();
 
-            // Garante que NomeUsuario nunca seja nulo
             foreach (var c in chamados)
                 c.NomeUsuario ??= "Usuário";
 
             if (papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
                 return View("~/Views/DashboardTecnico/Index.cshtml", chamados);
 
-            // Para usuários comuns, enviar todos os chamados (visualização) para “Todos os Chamados”
             return View("~/Views/Home/Dashboard.cshtml", chamados);
         }
 
+        // 🔹 Criar chamado
         [HttpPost]
         public IActionResult CriarChamado(string titulo, string descricao)
         {
@@ -63,6 +60,7 @@ namespace ProjetoTi.Controllers
             return RedirectToAction("Index");
         }
 
+        // 🔹 Fechar chamado
         [HttpGet]
         public IActionResult FecharChamado(int id)
         {
@@ -87,7 +85,7 @@ namespace ProjetoTi.Controllers
             return RedirectToAction("Index");
         }
 
-        // 🔹 Filtro de chamados para técnico e usuário
+        // 🔹 Filtro de chamados
         [HttpPost]
         public IActionResult PesquisarChamados(string id, string assunto, string data, string prioridade, string colaborador)
         {
@@ -95,15 +93,17 @@ namespace ProjetoTi.Controllers
             var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
 
             var resultados = new List<Chamado>();
+
             foreach (var c in chamados)
             {
                 c.NomeUsuario ??= "Usuário";
 
-                bool match = (string.IsNullOrEmpty(id) || c.Id.ToString().Contains(id))
-                             && (string.IsNullOrEmpty(assunto) || c.Titulo.Contains(assunto, StringComparison.OrdinalIgnoreCase))
-                             && (string.IsNullOrEmpty(data) || c.DataAbertura.ToString("yyyy-MM-dd").Contains(data))
-                             && (string.IsNullOrEmpty(colaborador) || c.NomeUsuario.Contains(colaborador, StringComparison.OrdinalIgnoreCase))
-                             && (string.IsNullOrEmpty(prioridade) || c.Status.Contains(prioridade, StringComparison.OrdinalIgnoreCase));
+                bool match =
+                    (string.IsNullOrEmpty(id) || c.Id.ToString().Contains(id)) &&
+                    (string.IsNullOrEmpty(assunto) || c.Titulo.Contains(assunto, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(data) || c.DataAbertura.ToString("yyyy-MM-dd").Contains(data)) &&
+                    (string.IsNullOrEmpty(colaborador) || c.NomeUsuario.Contains(colaborador, StringComparison.OrdinalIgnoreCase)) &&
+                    (string.IsNullOrEmpty(prioridade) || c.Status.Contains(prioridade, StringComparison.OrdinalIgnoreCase));
 
                 if (match)
                     resultados.Add(c);
@@ -112,8 +112,75 @@ namespace ProjetoTi.Controllers
             if (papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
                 return View("~/Views/DashboardTecnico/Index.cshtml", resultados);
 
-            // Usuário comum: apenas visualização dos chamados filtrados
             return View("~/Views/Home/Dashboard.cshtml", resultados);
         }
+
+        // ====== Gerenciamento de usuários (somente técnico) ======
+
+        // 🔹 Lista todos os usuários
+        [HttpGet]
+        public IActionResult Usuarios()
+        {
+            var papel = HttpContext.Session.GetString("Papel") ?? "colaborador";
+            if (!papel.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
+                return RedirectToAction("Index");
+
+            var usuarios = _usuarioRepo.ListarUsuarios();
+            return View("~/Views/DashboardTecnico/Usuarios.cshtml", usuarios);
+        }
+
+        // 🔹 Cria novo usuário (feito pelo técnico)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CriarUsuarioPeloTecnico(string Nome, string Email, string Senha, string Papel)
+        {
+            var papelSess = HttpContext.Session.GetString("Papel") ?? "colaborador";
+            if (!papelSess.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
+                return RedirectToAction("Index");
+
+            if (string.IsNullOrWhiteSpace(Nome) || string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Senha))
+            {
+                TempData["UsuarioMsgErro"] = "Nome, email e senha são obrigatórios.";
+                return RedirectToAction("Usuarios");
+            }
+
+            var novo = new Usuario
+            {
+                Nome = Nome.Trim(),
+                Email = Email.Trim(),
+                Senha = Senha,
+                Papel = string.IsNullOrWhiteSpace(Papel) ? "colaborador" : Papel
+            };
+
+            var ok = _usuarioRepo.CriarUsuario(novo);
+            TempData[ok ? "UsuarioMsgSucesso" : "UsuarioMsgErro"] =
+                ok ? "Usuário criado com sucesso." : "Falha ao criar usuário (verifique email duplicado).";
+
+            return RedirectToAction("Usuarios");
+        }
+
+        // 🔹 Exclui usuário
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExcluirUsuario(int id)
+        {
+            var papelSess = HttpContext.Session.GetString("Papel") ?? "colaborador";
+            var usuarioIdSess = HttpContext.Session.GetInt32("UsuarioId") ?? 0;
+
+            if (!papelSess.Equals("tecnico", StringComparison.OrdinalIgnoreCase))
+                return RedirectToAction("Index");
+
+            if (id == usuarioIdSess)
+            {
+                TempData["UsuarioMsgErro"] = "Você não pode excluir sua própria conta enquanto estiver logado.";
+                return RedirectToAction("Usuarios");
+            }
+
+            var ok = _usuarioRepo.ExcluirUsuario(id);
+            TempData[ok ? "UsuarioMsgSucesso" : "UsuarioMsgErro"] =
+                ok ? "Usuário excluído com sucesso." : "Falha ao excluir usuário.";
+
+            return RedirectToAction("Usuarios");
+        }
     }
-    }
+}

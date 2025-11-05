@@ -270,35 +270,153 @@
 
         /* Mobile */
         @@media (max-width:900px) {
-            .app
-
-        {
-            grid-template-columns: 1fr;
-            padding: 16px;
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            transform: translateX(-110%);
-            width: 240px;
-            background: rgba(255,255,255,0.9);
-            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
-        }
-
-            .sidebar.open {
-                transform: translateX(0);
+            .app {
+                grid-template-columns: 1fr;
+                padding: 16px;
             }
 
-        .hamburger {
-            display: inline-block;
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-110%);
+                width: 240px;
+                background: rgba(255,255,255,0.9);
+                box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .hamburger {
+                display: inline-block;
+            }
+        }
+
+        /* --- Botão Flutuante do Chat --- */
+        .chat-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, background 0.3s;
+            z-index: 400;
+        }
+
+            .chat-btn:hover {
+                background: #1e4ed8;
+                transform: scale(1.05);
+            }
+
+        .chat-box {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 320px;
+            background: var(--card);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 401;
+            animation: slideUp 0.25s ease;
+        }
+
+        @@keyframes slideUp {
+            from
+
+        {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
         }
 
         }
+
+        .chat-header {
+            background: var(--accent);
+            color: #fff;
+            padding: 12px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-chat {
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .chat-body {
+            padding: 12px;
+            height: 260px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #f9fafb;
+        }
+
+        .chat-msg {
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 80%;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+            .chat-msg.bot {
+                background: #e0e7ff;
+                align-self: flex-start;
+            }
+
+            .chat-msg.user {
+                background: #2563eb;
+                color: white;
+                align-self: flex-end;
+            }
+
+        .chat-footer {
+            display: flex;
+            border-top: 1px solid #e5e7eb;
+        }
+
+            .chat-footer input {
+                flex: 1;
+                border: none;
+                padding: 10px;
+                outline: none;
+                font-family: inherit;
+            }
+
+            .chat-footer button {
+                border: none;
+                background: var(--accent);
+                color: white;
+                padding: 0 14px;
+                font-size: 16px;
+                cursor: pointer;
+            }
     </style>
 </head>
+
 <body>
     <!-- Botão sair -->
     <button class="fixed" onclick="location.href='@Url.Action("Logout","Login")'">🚪 Sair</button>
@@ -404,34 +522,29 @@
         </main>
     </div>
 
+    <!-- Botão Flutuante de Chat -->
+    <button id="chatButton" class="chat-btn">💬</button>
+
+    <!-- Caixa do Chat -->
+    <div id="chatBox" class="chat-box">
+        <div class="chat-header">
+            🤖 Suporte IA
+            <span id="closeChat" class="close-chat">&times;</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <p class="chat-msg bot">Olá! Sou seu assistente virtual. Como posso ajudar?</p>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem..." />
+            <button id="sendChat">➤</button>
+        </div>
+    </div>
+
     <script>
-        const sidebar = document.getElementById('sidebar');
-        const toggleSidebar = document.getElementById('toggleSidebar');
-        const overlay = document.getElementById('overlay');
-
-        toggleSidebar?.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('show');
-        });
-        overlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('show');
-        });
-
-        // Navegação entre seções
-        const navButtons = document.querySelectorAll('.nav-item');
-        const views = {
-            todos: document.getElementById('view-todos'),
-            abrir: document.getElementById('view-abrir'),
-            meus: document.getElementById('view-meus')
-        };
-        navButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                navButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const view = btn.dataset.view;
-                Object.keys(views).forEach(k => views[k].style.display = (k === view ? '' : 'none'));
-            });
+        // Quando o usuário clicar no botão, será redirecionado para outro site
+        const chatButton = document.getElementById('chatButton');
+        chatButton.addEventListener('click', () => {
+            window.location.href = 'http://localhost:5173/'; // 🔗 coloque aqui o link desejado
         });
     </script>
 </body>

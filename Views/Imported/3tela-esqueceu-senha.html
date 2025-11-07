@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SuporteTI IA — Recuperar Senha</title>
+
+<style>
+:root {
+  --bg:#f6f8fb;
+  --card:#ffffff;
+  --header-bg:#2563eb;
+  --text:#111827;
+  --header-text:#ffffff;
+  --muted:#6b7280;
+  --accent:#2563eb;
+}
+
+/* Reset e layout */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.card-header {
+  background: var(--header-bg);
+  color: var(--header-text);
+  padding: 24px 18px;
+  text-align: center;
+}
+.brand .logo {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: #1e40af;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 24px;
+  margin-bottom: 12px;
+}
+.brand h1 { font-size: 28px; margin:0; }
+.brand p { font-size: 14px; margin:4px 0 0 0; color: var(--header-text); }
+
+form { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 12px; 
+  padding: 18px; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+label { font-size: 14px; margin-bottom: 4px; }
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.link { color: var(--accent); text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+.signup, .card-footer {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.form-message {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--danger);
+}
+</style>
+</head>
+<body>
+
+<div class="page-container">
+  <div class="card">
+    <header class="card-header">
+      <div class="brand">
+        <div class="logo">🔧</div>
+        <div>
+          <h1>SuporteTI IA</h1>
+          <p class="tagline">Recupere sua senha</p>
+        </div>
+      </div>
+    </header>
+
+    <section class="card-body">
+      <form id="recoverForm" novalidate>
+        <label for="email">Informe seu e-mail</label>
+        <input id="email" name="email" type="email" placeholder="seu@exemplo.com" required>
+
+        <button class="btn primary" type="submit">Enviar link de recuperação</button>
+
+        <div class="signup">
+          <span>Lembrou a senha?</span>
+          <a class="link" href="login.html">Entrar</a>
+        </div>
+
+        <div id="formMessage" role="status" class="form-message" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <footer class="card-footer">
+      <small>Universidade • Projeto de Sistemas • LGPD aplicada</small>
+    </footer>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('recoverForm');
+const formMessage = document.getElementById('formMessage');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  if (!email) {
+    formMessage.textContent = "Por favor, informe seu e-mail.";
+    return;
+  }
+  formMessage.textContent = "";
+  alert(`Link de recuperação enviado para ${email} (simulado).`);
+});
+</script>
+
+</body>
+</html>

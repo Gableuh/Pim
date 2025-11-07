@@ -1,0 +1,258 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chamado Aguardando Atendimento</title>
+<style>
+:root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --accent:#2563eb;
+    --primary:#1e63d6;
+    --radius:12px;
+    --shadow:0 6px 18px rgba(16,24,40,0.06);
+}
+
+/* Reset básico */
+body,html{
+    margin:0;
+    padding:0;
+    height:100%;
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* Layout principal */
+.app{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  height:100vh;
+  gap:24px;
+  position:relative;
+}
+
+/* Sidebar Técnico */
+.sidebar{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.brand{
+  display:flex; gap:12px; align-items:center; margin-bottom:18px;
+}
+.brand .logo{
+  width:44px;height:44px;border-radius:10px;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;
+}
+.brand h1{font-size:16px;margin:0;}
+.nav{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.nav button{
+  background:transparent;border:0;padding:10px 12px;border-radius:10px;
+  display:flex;align-items:center;gap:10px;color:var(--text);cursor:pointer;font-size:15px;
+}
+.nav button .ico{width:30px;text-align:center;font-size:18px;}
+.nav button:hover{background:rgba(99,102,241,0.06);}
+.nav button.active{background:rgba(37,99,235,0.12);color:var(--accent);}
+
+/* Atalhos da Sidebar */
+.sidebar-title {
+  font-size:13px;
+  color:var(--muted);
+  opacity:0.7; /* deixa quase transparente */
+  margin-top:12px;
+  margin-bottom:4px;
+  font-weight:600;
+}
+.sidebar-shortcuts{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:4px;
+}
+.nav-item.secondary{
+  background:transparent;
+  color:var(--accent);
+  border:1px solid rgba(37,99,235,0.12);
+  padding:10px 12px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.footer{font-size:13px;color:var(--muted);margin-top:auto;text-align:center;}
+
+/* Conteúdo principal */
+.main{
+  padding:24px;
+  overflow-y:auto;
+  position:relative;
+}
+
+/* Botões fixos no topo */
+.top-buttons{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:12px;
+}
+button.fixed{
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    background:var(--primary);
+    color:#fff;
+    cursor:pointer;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+}
+
+/* Card do Chamado */
+.card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:24px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-width:700px;
+    position:relative;
+}
+.header-top{
+    font-size:14px;
+    color:var(--muted);
+    font-style:italic;
+}
+h2{ margin:0; color:var(--text); }
+.subinfo{
+    font-size:14px;
+    color:var(--muted);
+    font-style:italic;
+    margin-bottom:12px;
+}
+label{ font-weight:600; margin-top:8px; }
+input[readonly], textarea{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #cbd5e1;
+    background:#f1f5f9;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    resize:none;
+    font-size:14px;
+}
+textarea{ 
+    min-height:80px; 
+    overflow:hidden; 
+    box-sizing:border-box;
+}
+
+/* Prioridade */
+.prioridade{
+    display:block;
+    padding:10px;
+    border-radius:6px;
+    font-weight:600;
+    background:#f1f5f9;
+    color:#111827;
+}
+
+/* Botão Assumir */
+.buttons{
+    display:flex;
+    justify-content:flex-start;
+    margin-top:16px;
+}
+button.assumir{
+    background:var(--primary);
+    color:#fff;
+    padding:10px 16px;
+    border-radius:12px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:14px;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar Técnico -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo">🛠️</div>
+      <div>
+        <h1>SuporteTI IA</h1>
+        <div style="font-size:13px;color:var(--muted)">Painel Técnico</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="active"><span class="ico">📋</span> Chamados Abertos</button>
+      <button><span class="ico">🗂️</span> Meus Chamados</button>
+    </nav>
+
+    <!-- Atalhos + Botão Sair -->
+    <div class="sidebar-title">Atalhos</div>
+    <div class="sidebar-shortcuts">
+      <button class="nav-item secondary" id="logoutBtn">Sair</button>
+      <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
+    </div>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <main class="main">
+      <div class="top-buttons">
+          <button class="fixed">← Voltar</button>
+          <button class="fixed" id="logoutTop">🚫 Desconectar</button>
+      </div>
+
+      <div class="card">
+          <div class="header-top">Logado como: João Silva</div>
+          <h2>Sistema travando ao abrir Excel</h2>
+          <div class="subinfo">Chamado aguardando atendimento</div>
+
+          <label>Setor / Categoria</label>
+          <input type="text" value="TI / Software" readonly>
+
+          <label>Prioridade</label>
+          <input type="text" value="Urgente" readonly class="prioridade">
+
+          <label>Descrição</label>
+          <textarea readonly>Sistema trava ao abrir planilhas do Excel e fecha sozinho.</textarea>
+
+          <label>Colaborador</label>
+          <input type="text" value="Arthur" readonly>
+
+          <label>Data / Hora</label>
+          <input type="text" value="14/10/2025 10:35" readonly>
+
+          <div class="buttons">
+              <button type="button" class="assumir">✔ Assumir</button>
+          </div>
+      </div>
+  </main>
+</div>
+
+<script>
+  // Logout do botão lateral
+  document.getElementById('logoutBtn').addEventListener('click', ()=>alert('Logout (simulado)'));
+  
+  // Logout do botão superior
+  document.getElementById('logoutTop').addEventListener('click', ()=>alert('Logout (simulado)'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+﻿@model List<ProjetoTi.Models.Chamado>
+@{
+    ViewData["Title"] = "Dashboard";
+    var usuarioNome = ViewData["UsuarioNome"]?.ToString() ?? "Usuário";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] — SuporteTI IA</title>
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --text: #111827;
+            --muted: #6b7280;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
+            --radius: 12px;
+            --header-bg: #2563eb;
+            --header-text: #fff;
+            --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        /* Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--accent);
+        }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+        /* Layout */
+        .app {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            padding: 28px;
+            transition: 0.3s ease;
+        }
+
+        .sidebar {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.25s ease;
+            position: relative;
+        }
+
+            .sidebar .brand {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+                .sidebar .brand .logo {
+                    width: 44px;
+                    height: 44px;
+                    background: var(--accent);
+                    color: white;
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 10px;
+                    margin-bottom: 12px;
+                    font-size: 24px;
+                }
+
+                .sidebar .brand h1 {
+                    font-size: 22px;
+                    margin-bottom: 4px;
+                }
+
+                .sidebar .brand p {
+                    font-size: 14px;
+                    color: var(--muted);
+                }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+            .nav button {
+                border: none;
+                background: transparent;
+                text-align: left;
+                padding: 10px 12px;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 15px;
+                color: var(--text);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .nav button:hover {
+                    background: rgba(99,102,241,0.06);
+                }
+
+                .nav button.active {
+                    background: rgba(37,99,235,0.12);
+                    color: var(--accent);
+                }
+
+        /* Main */
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hamburger {
+            display: none;
+            background: transparent;
+            border: 0;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        h2, h3, h4 {
+            margin: 0;
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        /* Grid de Cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(280px,1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+            .card h4 {
+                font-size: 16px;
+            }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+            .badge.open {
+                background: rgba(34,197,94,0.15);
+                color: var(--success);
+            }
+
+            .badge.pending {
+                background: rgba(250,204,21,0.15);
+                color: #b45309;
+            }
+
+            .badge.closed {
+                background: rgba(239,68,68,0.15);
+                color: var(--danger);
+            }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 500;
+            align-self: start;
+        }
+
+            .btn:hover {
+                opacity: 0.9;
+            }
+
+        .muted {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .fixed {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 100;
+        }
+
+        /* Responsivo */
+        @@media (max-width:900px) {
+            .app
+
+        {
+            grid-template-columns: 1fr;
+            padding: 16px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            transform: translateX(-110%);
+            width: 240px;
+            z-index: 50;
+        }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+        .hamburger {
+            display: inline-block;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <button class="fixed" onclick="location.href='@Url.Action("Logout","Login")'">🚫 Sair</button>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="logo">👤</div>
+                <h1>SuporteTI IA</h1>
+                <p>@usuarioNome</p>
+            </div>
+            <nav class="nav">
+                <button class="nav-item active" data-view="recents">📋 Chamados Recentes</button>
+                <button class="nav-item" data-view="abrir">✚ Abrir Chamado</button>
+                <button class="nav-item" data-view="meus">🗂️ Meus Chamados</button>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <main class="main">
+            <header class="topbar">
+                <button class="hamburger" id="toggleSidebar">☰</button>
+                <div>
+                    <h2>Bem-vindo, @usuarioNome</h2>
+                    <p class="muted">Painel de suporte e abertura de chamados</p>
+                </div>
+            </header>
+
+            <!-- Chamados Recentes -->
+            <section id="view-recents" class="panel">
+                <h3>Chamados Recentes</h3>
+                <div class="grid">
+                    @foreach (var c in Model)
+                    {
+                        <div class="card">
+                            <h4>@c.Titulo</h4>
+                            <p class="muted">@c.Descricao</p>
+                            <p><strong>Status:</strong> @c.Status</p>
+                            <p><strong>Data:</strong> @c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</p>
+                            <span class="badge @(c.Status.ToLower())">@c.Status</span>
+                            @if (c.Status != "Fechado")
+                            {
+                                <a class="btn" href="@Url.Action("FecharChamado","Home",new {id=c.Id})">Fechar</a>
+                            }
+                        </div>
+                    }
+                </div>
+            </section>
+
+            <!-- Abrir Chamado -->
+            <section id="view-abrir" class="panel" style="display:none;">
+                <h3>Abrir Novo Chamado</h3>
+                <form method="post" action="@Url.Action("CriarChamado","Home")">
+                    <label>Título</label>
+                    <input type="text" name="titulo" required style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;">
+                    <label>Descrição</label>
+                    <textarea name="descricao" rows="4" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ccc;"></textarea>
+                    <button class="btn" type="submit">Enviar</button>
+                </form>
+            </section>
+
+            <!-- Meus Chamados -->
+            <section id="view-meus" class="panel" style="display:none;">
+                <h3>Meus Chamados</h3>
+                <p class="muted">Chamados que você abriu.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Sidebar recolhível
+        const sidebar=document.getElementById('sidebar');
+        document.getElementById('toggleSidebar').addEventListener('click',()=>{sidebar.classList.toggle('open');});
+
+        // Navegação entre seções
+        const navButtons=document.querySelectorAll('.nav-item');
+        const views={
+            recents:document.getElementById('view-recents'),
+            abrir:document.getElementById('view-abrir'),
+            meus:document.getElementById('view-meus')
+        };
+        navButtons.forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                navButtons.forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');
+                const view=btn.dataset.view;
+                Object.keys(views).forEach(k=>views[k].style.display=(k===view)?'':'none');
+            });
+        });
+    </script>
+</body>
+</html>

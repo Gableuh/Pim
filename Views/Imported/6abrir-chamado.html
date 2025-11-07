@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Abrir Chamado — SuporteTI IA</title>
+<style>
+  :root{
+    --bg:#f6f8fb;
+    --card:#ffffff;
+    --muted:#6b7280;
+    --text:#111827;
+    --accent:#2563eb;
+    --primary:#1e63d6;
+    --success:#10b981;
+    --danger:#ef4444;
+    --shadow: 0 6px 18px rgba(16,24,40,0.06);
+    --radius:12px;
+  }
+  [data-theme="dark"]{
+    --bg:#0b1220;
+    --card:#071226;
+    --muted:#9aa6b2;
+    --text:#e6eef6;
+    --accent:#60a5fa;
+    --shadow: 0 8px 20px rgba(2,6,23,0.6);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background:var(--bg); color:var(--text); -webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none}
+
+  .app{
+    min-height:100vh;
+    display:grid;
+    grid-template-columns: 260px 1fr;
+    gap:24px;
+    padding:28px;
+    align-items:start;
+  }
+
+  @media (max-width:900px){
+    .app{grid-template-columns:1fr; padding:16px;}
+    .sidebar{position:fixed; left:0; top:0; bottom:0; transform:translateX(-110%); transition:transform .25s ease; z-index:30}
+    .sidebar.open{transform:translateX(0)}
+  }
+
+  .sidebar{
+    background:linear-gradient(180deg, rgba(255,255,255,0.9), var(--card));
+    border-radius:var(--radius);
+    padding:18px;
+    box-shadow:var(--shadow);
+    height:calc(100vh - 56px);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+  .brand{
+    display:flex; gap:12px; align-items:center; margin-bottom:18px;
+  }
+  .brand .logo{width:44px;height:44px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px}
+  .brand h1{font-size:16px;margin:0}
+  .nav{margin-top:8px; display:flex; flex-direction:column; gap:6px}
+  .nav button{
+    background:transparent;border:0;padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:10px;color:var(--text);cursor:pointer;font-size:15px;
+  }
+  .nav button .ico{width:30px;text-align:center;font-size:18px}
+  .nav button:hover{background:rgba(99,102,241,0.06)}
+  .nav button.active{background:rgba(37,99,235,0.12); color:var(--accent)}
+
+  /* Sidebar Atalhos */
+  .sidebar-title{
+    font-size:13px;
+    color:var(--muted);
+    opacity:0.7;
+    margin-top:14px;
+    margin-bottom:8px;
+    font-weight:600;
+  }
+  .sidebar-shortcuts{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    align-items:center;
+  }
+  .sidebar-shortcuts .nav-item.secondary{
+    background:transparent;
+    color:var(--accent);
+    border:1px solid rgba(37,99,235,0.12);
+    padding:10px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    text-align:center;
+    width:100%;
+  }
+  .sidebar-shortcuts .nav-item.secondary:hover{
+    background:rgba(37,99,235,0.12);
+  }
+  .sidebar-shortcuts .footer{
+    font-size:13px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  .main{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    padding-top:60px; /* espaço para o botão Voltar */
+  }
+  .panel{
+    background:var(--card);
+    border-radius:12px;
+    padding:18px;
+    box-shadow:var(--shadow);
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:24px;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-width:700px;
+  }
+  .header-top{font-size:14px;color:var(--muted);font-style:italic;}
+  label{ font-weight:600; margin-top:8px; }
+  input, select, textarea{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #cbd5e1;
+    background:#f1f5f9;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+    font-size:14px;
+  }
+  textarea{min-height:100px; resize:none;}
+  .prioridade{background:#f1f5f9; color:#111827; font-weight:600; padding:10px; border-radius:6px;}
+
+  /* Botões fixos */
+  .fixed{
+    position:fixed;
+    top:16px;
+    padding:10px 16px;
+    border:none;
+    border-radius:12px;
+    background:var(--accent);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    z-index:100;
+  }
+  .fixed.voltar{left:280px;} /* fora da sidebar */
+  .fixed.desconectar{right:16px;}
+
+  /* Botão Abrir Chamado igual aos fixos */
+  .btn-fixed{
+    background:var(--accent);
+    color:white;
+    border:none;
+    border-radius:12px;
+    padding:10px 16px;
+    cursor:pointer;
+    font-weight:600;
+    align-self:flex-start;
+  }
+</style>
+</head>
+<body>
+  <!-- Botões fixos -->
+  <button class="fixed voltar">← Voltar</button>
+  <button class="fixed desconectar">🚫 Desconectar</button>
+
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar panel" id="sidebar">
+      <div class="brand">
+        <div class="logo">👤</div>
+        <div>
+          <h1>SuporteTI IA</h1>
+          <div class="muted">Painel do Usuário</div>
+        </div>
+      </div>
+
+      <nav class="nav" role="navigation" aria-label="Menu principal">
+        <button class="nav-item" data-view="recents"><span class="ico">📋</span> Lista de Chamados</button>
+        <button class="nav-item active" data-view="abrir"><span class="ico">✚</span> Abrir Chamado</button>
+        <button class="nav-item" data-view="meus"><span class="ico">🗂️</span> Meus Chamados</button>
+      </nav>
+
+      <!-- Atalhos -->
+      <div class="sidebar-title">Atalhos</div>
+      <div class="sidebar-shortcuts">
+        <button class="nav-item secondary" id="logoutBtn">Sair</button>
+        <div class="footer">Universidade • Projeto de Sistemas • LGPD aplicada</div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <section class="panel">
+        <h3>Abrir Chamado</h3>
+        <p class="muted">Preencha os campos abaixo para abrir um novo chamado.</p>
+        <div class="card">
+          <label>Assunto</label>
+          <input type="text" placeholder="Digite o assunto do chamado">
+
+          <label>Setor</label>
+          <select>
+            <option>TI / Software</option>
+            <option>Financeiro / Aplicação</option>
+            <option>RH / Atendimento</option>
+          </select>
+
+          <label>Prioridade</label>
+          <select>
+            <option>Baixa</option>
+            <option>Média</option>
+            <option>Alta</option>
+            <option>Urgente</option>
+          </select>
+
+          <label>Colaborador</label>
+          <input type="text" placeholder="Nome do colaborador">
+
+          <label>Descrição</label>
+          <textarea placeholder="Digite a descrição ou motivo da abertura do chamado"></textarea>
+
+          <button class="btn-fixed" onclick="alert('Chamado aberto com sucesso!')">Abrir Chamado</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+<script>
+  // logout (simulado)
+  document.getElementById('logoutBtn').addEventListener('click', ()=>alert('Logout (simulado)'));
+</script>
+</body>
+</html>

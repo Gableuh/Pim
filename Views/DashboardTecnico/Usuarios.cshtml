@@ -1,0 +1,431 @@
+﻿@model List<ProjetoTi.Models.Usuario>
+@{
+    Layout = null;
+    ViewData["Title"] = "Gerenciar Usuários";
+    var usuarioNome = ViewBag.NomeUsuario?.ToString() ?? "Técnico";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@ViewData["Title"] — SuporteTI IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --accent: #2563eb;
+            --text: #111827;
+            --muted: #6b7280;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 6px 18px rgba(16,24,40,0.06);
+            --font: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 24px;
+            padding: 28px;
+            transition: 0.3s ease;
+        }
+
+        .sidebar {
+            background: transparent;
+            border-radius: var(--radius);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            transition: transform .3s ease;
+            z-index: 200;
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+            .brand .logo {
+                width: 44px;
+                height: 44px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+            }
+
+            .brand h1 {
+                font-size: 18px;
+                margin-top: 8px;
+            }
+
+            .brand p {
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .nav-item {
+            border: 0;
+            background: transparent;
+            text-align: left;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background .2s;
+        }
+
+            .nav-item:hover {
+                background: rgba(37,99,235,0.06);
+            }
+
+            .nav-item.active {
+                background: rgba(37,99,235,0.12);
+                color: var(--accent);
+            }
+
+        .main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hamburger {
+            display: none;
+            background: transparent;
+            border: 0;
+            font-size: 22px;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(300px,1fr));
+            gap: 16px;
+            margin-top: 14px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            transition: transform .15s;
+        }
+
+            .card:hover {
+                transform: translateY(-4px);
+            }
+
+        .card-id {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            font-size: 0.85rem;
+            color: rgba(0,0,0,0.35);
+            font-weight: 600;
+        }
+
+        .muted {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: 500;
+            align-self: start;
+        }
+
+            .btn.danger {
+                background: var(--danger);
+            }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+            .form-row input, .form-row select {
+                flex: 1;
+                min-width: 160px;
+                padding: .6rem;
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+            }
+
+        .password-container {
+            position: relative;
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .fixed {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 300;
+            box-shadow: var(--shadow);
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .3s ease;
+            z-index: 150;
+        }
+
+            .overlay.show {
+                opacity: 1;
+                pointer-events: all;
+            }
+
+        @@media (max-width:900px) {
+            .app {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                transform: translateX(-110%);
+                width: 240px;
+                background: rgba(255,255,255,0.92);
+                box-shadow: 4px 0 12px rgba(0,0,0,0.08);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .hamburger {
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="fixed" onclick="location.href='@Url.Action("Index","Login")'">🚪 Sair</button>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">🛠️ Painel Técnico</div>
+            <div class="nav">
+                <div class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" ? "active" : "")"
+                     onclick="navigateTo('@Url.Action("Index", "Home")')">
+                    🗂️ Todos os Chamados
+                </div>
+
+                <div class="nav-item @(ViewContext.RouteData.Values["Action"]?.ToString() == "Usuarios" ? "active" : "")"
+                     onclick="navigateTo('@Url.Action("Usuarios", "Home")')">
+                    👥 Gerenciar Usuários
+                </div>
+            </div>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <button class="hamburger" id="toggleSidebar">☰</button>
+                    <div>
+                        <h2>Gerenciar Usuários</h2>
+                        <p class="muted">Painel administrativo — crie e remova contas</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Criar usuário -->
+            <section class="panel">
+                <h3>Criar usuário</h3>
+                <div class="create-card">
+                    <form method="post" action="@Url.Action("CriarUsuarioPeloTecnico","Home")" onsubmit="return validarCriarUsuario(this);">
+                        @Html.AntiForgeryToken()
+                        <div class="form-row">
+                            <input name="Nome" placeholder="Nome" required />
+                            <input name="Email" type="email" placeholder="E-mail" required />
+                            <div class="password-container">
+                                <input name="Senha" type="password" id="senha" placeholder="Senha" required />
+                                <span class="toggle-password" onclick="toggleSenha('senha')">👁️</span>
+                            </div>
+                            <div class="password-container">
+                                <input name="ConfirmarSenha" type="password" id="confirmarSenha" placeholder="Confirmar senha" required />
+                                <span class="toggle-password" onclick="toggleSenha('confirmarSenha')">👁️</span>
+                            </div>
+                            <select name="Papel">
+                                <option value="colaborador">colaborador</option>
+                                <option value="tecnico">técnico</option>
+                            </select>
+                        </div>
+                        <div style="margin-top:8px">
+                            <button class="btn" type="submit">Criar usuário</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Lista -->
+            <section class="panel">
+                <h3>Usuários</h3>
+                <div class="grid">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="card"><p class="muted">Nenhum usuário encontrado.</p></div>
+                    }
+                    else
+                    {
+                        foreach (var u in Model)
+                        {
+                            <div class="card">
+                                <div class="card-id">#@u.Id</div>
+                                <h4>@u.Nome</h4>
+                                <p class="muted">@u.Email</p>
+                                <p><strong>Papel:</strong> @u.Papel</p>
+                                <form method="post" action="@Url.Action("ExcluirUsuario","Home")" onsubmit="return confirmarExcluir(this);">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@u.Id" />
+                                    <button type="submit" class="btn danger">Excluir</button>
+                                </form>
+                            </div>
+                        }
+                    }
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const toggleSidebar = document.getElementById('toggleSidebar');
+        const overlay = document.getElementById('overlay');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+        }
+
+        toggleSidebar?.addEventListener('click', () => {
+            sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+        });
+
+        overlay.addEventListener('click', closeSidebar);
+
+        navItems.forEach(item => {
+            item.addEventListener('click', closeSidebar);
+        });
+
+        function navigateTo(url) {
+            window.location.href = url;
+        }
+
+        function confirmarExcluir(form) {
+            return confirm('Tem certeza que deseja excluir este usuário? Esta ação é irreversível.');
+        }
+
+        function validarCriarUsuario(form) {
+            const senha = form.querySelector('[name="Senha"]').value;
+            const confirmar = form.querySelector('[name="ConfirmarSenha"]').value;
+            if (senha !== confirmar) {
+                alert('As senhas não coincidem.');
+                return false;
+            }
+            return true;
+        }
+
+        function toggleSenha(id) {
+            const campo = document.getElementById(id);
+            campo.type = campo.type === 'password' ? 'text' : 'password';
+        }
+    </script>
+</body>
+</html>

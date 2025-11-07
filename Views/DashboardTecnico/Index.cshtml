@@ -1,0 +1,347 @@
+﻿@{
+    Layout = null;
+}
+@model List<ProjetoTi.Models.Chamado>
+@{
+    ViewData["Title"] = "Painel do Técnico";
+    var usuarioNome = ViewBag.NomeUsuario?.ToString() ?? "Técnico";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg: #f6f8fb;
+            --card-bg: #fff;
+            --accent: #2563eb;
+            --text: #1e293b;
+            --muted: #64748b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --border: #e2e8f0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            border-right: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+            position: relative;
+            z-index: 50;
+        }
+
+        .sidebar-header {
+            font-weight: 600;
+            font-size: 1.2rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        .nav-item {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+            .nav-item:hover,
+            .nav-item.active {
+                background: rgba(37, 99, 235, 0.12);
+                color: var(--accent);
+            }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-info {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .logout {
+            background: var(--accent);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            z-index: 300;
+            position: fixed;
+            top: 16px;
+            right: 16px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        input[type="text"], input[type="date"], select {
+            padding: 0.6rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            button:hover {
+                background: #1d4ed8;
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+            .card:hover {
+                transform: translateY(-3px);
+            }
+
+            .card h4 {
+                margin: 0;
+                font-size: 1.1rem;
+            }
+
+        .muted {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .card-id {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-top: 0.3rem;
+        }
+
+            .badge.aberto {
+                background: var(--accent);
+                color: white;
+            }
+
+            .badge.fechado {
+                background: var(--success);
+                color: white;
+            }
+
+        /* HAMBURGER */
+        .hamburger {
+            display: none;
+            font-size: 1.5rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            margin-right: 1rem;
+            color: #000;
+        }
+
+        /* MOBILE */
+        @@media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.95);
+                transform: translateX(-100%);
+                z-index: 100;
+                width: 240px;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+            }
+
+                .sidebar.open {
+                    transform: translateX(0);
+                }
+
+            .hamburger {
+                display: block;
+            }
+
+            .overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 50;
+                display: none;
+            }
+
+                .overlay.show {
+                    display: block;
+                }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">🛠️ Painel Técnico</div>
+        <div class="nav">
+            <!-- Link para Todos os Chamados -->
+            <div class="nav-item active" id="btn-todos" onclick="window.location.href='@Url.Action("Index", "Home")'">
+                🗂️ Todos os Chamados
+            </div>
+
+            <!-- Link para Gerenciar Usuários -->
+            <div class="nav-item" onclick="window.location.href='@Url.Action("Usuarios", "Home")'">
+                👥 Gerenciar Usuários
+            </div>
+        </div>
+    </aside>
+
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main -->
+    <main class="main">
+        <div class="topbar">
+            <div style="display:flex;align-items:center;">
+                <button class="hamburger" id="toggleSidebar">☰</button>
+                <span class="user-info">Bem-vindo, @usuarioNome 👋</span>
+            </div>
+        </div>
+
+        <h2>Todos os Chamados</h2>
+
+        <form method="post" action="@Url.Action("PesquisarChamados","Home")" class="filters">
+            <input type="text" name="id" placeholder="ID" />
+            <input type="text" name="assunto" placeholder="Assunto" />
+            <input type="text" name="colaborador" placeholder="Colaborador" />
+            <input type="date" name="data" />
+            <select name="prioridade">
+                <option value="">Status</option>
+                <option value="Aberto">Aberto</option>
+                <option value="Fechado">Fechado</option>
+            </select>
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <div class="grid">
+            @foreach (var c in Model)
+            {
+                <div class="card">
+                    <div class="card-id">#@c.Id</div>
+                    <h4>@c.Titulo</h4>
+                    <p class="muted">@c.Descricao</p>
+                    <p><strong>Usuário:</strong> @c.NomeUsuario</p>
+                    <p><strong>Status:</strong> @c.Status</p>
+                    <p><strong>Data:</strong> @c.DataAbertura.ToString("dd/MM/yyyy HH:mm")</p>
+                    <span class="badge @(c.Status.ToLower())">@c.Status</span>
+
+                    @if (c.Status != "Fechado")
+                    {
+                        <a href="@Url.Action("FecharChamado", "Home", new { id = c.Id })">
+                            <button style="margin-top: 0.8rem;">Fechar</button>
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    </main>
+
+    <!-- Botão Sair -->
+    <button class="logout" onclick="window.location.href='@Url.Action("Index","Login")'">🚪 Sair</button>
+
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.getElementById("overlay");
+        const toggleSidebar = document.getElementById("toggleSidebar");
+
+        function openSidebar() {
+            sidebar.classList.add("open");
+            overlay.classList.add("show");
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove("open");
+            overlay.classList.remove("show");
+        }
+
+        toggleSidebar.addEventListener("click", () => {
+            if (sidebar.classList.contains("open")) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        });
+
+        overlay.addEventListener("click", () => closeSidebar());
+    </script>
+</body>
+</html>

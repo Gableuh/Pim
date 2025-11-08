@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using ProjetoTi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         usuarioRepo.CriarUsuarioTeste(); // Cria usuário padrão se não existir
-        Console.WriteLine("✅ Usuário de teste garantido: gabriel@teste.com / 123456");
+        Console.WriteLine("✅ Usuário de teste garantido: user@user.com / 12345");
     }
     catch (Exception ex)
     {
@@ -75,7 +76,7 @@ app.MapGet("/test-db", (UsuarioRepository repo) =>
 {
     try
     {
-        var usuario = repo.Autenticar("gabriel@teste.com", "123456");
+        var usuario = repo.Autenticar("user@user.com", "12345");
         return usuario != null
             ? Results.Ok("✅ Conexão bem-sucedida com o banco e usuário encontrado!")
             : Results.Problem("⚠️ Conexão OK, mas usuário não encontrado.");
@@ -85,5 +86,18 @@ app.MapGet("/test-db", (UsuarioRepository repo) =>
         return Results.Problem($"❌ Erro ao conectar: {ex.Message}");
     }
 });
+
+var repo = new UsuarioRepository();
+
+var novoUsuario = new Usuario
+{
+    Nome = "admin",
+    Email = "admin@admin.com",
+    Senha = "admin", // vai ser criptografada automaticamente
+    Papel = "tecnico"
+};
+
+repo.CriarUsuario(novoUsuario);
+
 
 app.Run();

@@ -8,7 +8,7 @@ namespace ProjetoTi.Controllers
         public IActionResult Index()
         {
             // Aqui poderemos futuramente buscar os chamados do usuário logado
-            ViewBag.UsuarioNome = "Gabriel"; // temporário
+            ViewBag.UsuarioNome = "User"; // temporário
             return View();
         }
 

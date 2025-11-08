@@ -1,6 +1,8 @@
 ﻿using Npgsql;
 using ProjetoTi.Models;
 using System;
+using System.Collections.Generic;
+using BCrypt.Net; // Biblioteca para criptografia
 
 namespace ProjetoTi.Data
 {
@@ -12,7 +14,7 @@ namespace ProjetoTi.Data
             "Username=postgres;Password=ProjetoTi123;" +
             "SSL Mode=Require;Trust Server Certificate=true;";
 
-        // 🔹 Autentica usuário
+        // 🔹 Autentica usuário (aceita senha pura e senha hash)
         public Usuario? Autenticar(string email, string senha)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
@@ -22,37 +24,57 @@ namespace ProjetoTi.Data
             conn.Open();
 
             using var cmd = new NpgsqlCommand(
-                "SELECT id, nome, email, senha, papel, criado_em FROM usuarios WHERE email=@e AND senha=@s", conn);
+                "SELECT id, nome, email, senha, papel, criado_em FROM usuarios WHERE email=@e", conn);
             cmd.Parameters.AddWithValue("@e", email);
-            cmd.Parameters.AddWithValue("@s", senha);
 
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                return new Usuario
+                string senhaHash = reader.GetString(reader.GetOrdinal("senha"));
+                bool senhaConfere = false;
+
+                // Detecta se o campo senha é hash do BCrypt
+                if (senhaHash.StartsWith("$2a$") || senhaHash.StartsWith("$2b$"))
                 {
-                    Id = reader.GetInt32(reader.GetOrdinal("id")),
-                    Nome = reader.GetString(reader.GetOrdinal("nome")),
-                    Email = reader.GetString(reader.GetOrdinal("email")),
-                    Senha = reader.GetString(reader.GetOrdinal("senha")),
-                    Papel = reader.GetString(reader.GetOrdinal("papel"))
-                };
+                    // Senha armazenada é hash
+                    senhaConfere = BCrypt.Net.BCrypt.Verify(senha, senhaHash);
+                }
+                else
+                {
+                    // Senha armazenada ainda é texto puro (usuário antigo)
+                    senhaConfere = senha == senhaHash;
+                }
+
+                if (senhaConfere)
+                {
+                    return new Usuario
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("id")),
+                        Nome = reader.GetString(reader.GetOrdinal("nome")),
+                        Email = reader.GetString(reader.GetOrdinal("email")),
+                        Senha = senhaHash,
+                        Papel = reader.GetString(reader.GetOrdinal("papel"))
+                    };
+                }
             }
 
             return null;
         }
 
-        // 🔹 Cria usuário novo
+        // 🔹 Cria usuário novo (com senha criptografada)
         public bool CriarUsuario(Usuario usuario)
         {
             using var conn = new NpgsqlConnection(connectionString);
             conn.Open();
 
+            // Criptografa a senha antes de salvar
+            string senhaHash = BCrypt.Net.BCrypt.HashPassword(usuario.Senha);
+
             using var cmd = new NpgsqlCommand(
                 "INSERT INTO usuarios (nome, email, senha, papel, criado_em) VALUES (@n, @e, @s, @p, NOW())", conn);
             cmd.Parameters.AddWithValue("@n", usuario.Nome);
             cmd.Parameters.AddWithValue("@e", usuario.Email);
-            cmd.Parameters.AddWithValue("@s", usuario.Senha);
+            cmd.Parameters.AddWithValue("@s", senhaHash);
             cmd.Parameters.AddWithValue("@p", usuario.Papel);
 
             try
@@ -67,22 +89,24 @@ namespace ProjetoTi.Data
             }
         }
 
-        // 🔹 Cria usuário de teste
+        // 🔹 Cria usuário de teste (com senha criptografada)
         public void CriarUsuarioTeste()
         {
             using var conn = new NpgsqlConnection(connectionString);
             conn.Open();
 
             using var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM usuarios WHERE email=@e", conn);
-            checkCmd.Parameters.AddWithValue("@e", "gabriel@teste.com");
+            checkCmd.Parameters.AddWithValue("@e", "user@user.com");
             long count = (long)checkCmd.ExecuteScalar()!;
             if (count > 0) return;
 
+            string senhaHash = BCrypt.Net.BCrypt.HashPassword("12345");
+
             using var insertCmd = new NpgsqlCommand(
                 "INSERT INTO usuarios (nome, email, senha, papel, criado_em) VALUES (@n, @e, @s, @p, NOW())", conn);
-            insertCmd.Parameters.AddWithValue("@n", "Gabriel Santos");
-            insertCmd.Parameters.AddWithValue("@e", "gabriel@teste.com");
-            insertCmd.Parameters.AddWithValue("@s", "123456");
+            insertCmd.Parameters.AddWithValue("@n", "User");
+            insertCmd.Parameters.AddWithValue("@e", "user@user.com");
+            insertCmd.Parameters.AddWithValue("@s", senhaHash);
             insertCmd.Parameters.AddWithValue("@p", "colaborador");
             insertCmd.ExecuteNonQuery();
         }
@@ -118,7 +142,6 @@ namespace ProjetoTi.Data
             using var conn = new NpgsqlConnection(connectionString);
             conn.Open();
 
-            // opcional: aqui não bloqueamos exclusão de técnicos — decisão do negócio
             var sql = "DELETE FROM usuarios WHERE id = @id";
             using var cmd = new NpgsqlCommand(sql, conn);
             cmd.Parameters.AddWithValue("@id", id);
@@ -133,6 +156,5 @@ namespace ProjetoTi.Data
                 return false;
             }
         }
-
     }
 }

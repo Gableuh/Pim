@@ -96,7 +96,7 @@ namespace ProjetoTi.Data
             conn.Open();
 
             using var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM usuarios WHERE email=@e", conn);
-            checkCmd.Parameters.AddWithValue("@e", "user@user.com");
+            checkCmd.Parameters.AddWithValue("@e", "admin@admin.com");
             long count = (long)checkCmd.ExecuteScalar()!;
             if (count > 0) return;
 
@@ -104,10 +104,10 @@ namespace ProjetoTi.Data
 
             using var insertCmd = new NpgsqlCommand(
                 "INSERT INTO usuarios (nome, email, senha, papel, criado_em) VALUES (@n, @e, @s, @p, NOW())", conn);
-            insertCmd.Parameters.AddWithValue("@n", "User");
-            insertCmd.Parameters.AddWithValue("@e", "user@user.com");
+            insertCmd.Parameters.AddWithValue("@n", "Admin");
+            insertCmd.Parameters.AddWithValue("@e", "admin@admin.com");
             insertCmd.Parameters.AddWithValue("@s", senhaHash);
-            insertCmd.Parameters.AddWithValue("@p", "colaborador");
+            insertCmd.Parameters.AddWithValue("@p", "tecnico");
             insertCmd.ExecuteNonQuery();
         }
 

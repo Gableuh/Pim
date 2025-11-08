@@ -87,17 +87,7 @@ app.MapGet("/test-db", (UsuarioRepository repo) =>
     }
 });
 
-var repo = new UsuarioRepository();
 
-var novoUsuario = new Usuario
-{
-    Nome = "admin",
-    Email = "admin@admin.com",
-    Senha = "admin", // vai ser criptografada automaticamente
-    Papel = "tecnico"
-};
-
-repo.CriarUsuario(novoUsuario);
 
 
 app.Run();

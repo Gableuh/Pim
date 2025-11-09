@@ -1,7 +1,8 @@
 ﻿@model ProjetoTi.Models.Usuario
 @{
+    
     ViewData["Title"] = "Cadastre-se";
-    Layout = null; // troque para "_Layout" se você tiver um layout compartilhado
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -9,9 +10,12 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- 🔹 Título exibido na aba do navegador -->
     <title>@ViewData["Title"] - SuporteTI IA</title>
 
     <style>
+        /* 🎨 Paleta de cores e variáveis principais */
         :root {
             --bg: #f6f8fb;
             --card: #ffffff;
@@ -22,7 +26,7 @@
             --accent: #2563eb;
         }
 
-        /* Reset e layout */
+        /* 🔹 Reset básico e estrutura de layout */
         body, html {
             margin: 0;
             padding: 0;
@@ -32,6 +36,7 @@
             color: var(--text);
         }
 
+        /* 🔹 Centraliza o card na tela */
         .signup-page {
             min-height: 100vh;
             display: flex;
@@ -41,6 +46,7 @@
             box-sizing: border-box;
         }
 
+        /* 🔹 Card principal do formulário */
         .card {
             background: var(--card);
             border-radius: 12px;
@@ -53,6 +59,7 @@
             overflow: hidden;
         }
 
+        /* 🔹 Cabeçalho azul com nome e logo */
         .card-header {
             background: var(--header-bg);
             color: var(--header-text);
@@ -60,6 +67,7 @@
             text-align: center;
         }
 
+        /* 🔹 Ícone do logotipo */
         .brand .logo {
             width: 44px;
             height: 44px;
@@ -74,6 +82,7 @@
             margin-bottom: 8px;
         }
 
+        /* 🔹 Título e subtítulo */
         .brand h1 {
             font-size: 22px;
             margin: 0;
@@ -85,10 +94,12 @@
             color: var(--header-text);
         }
 
+        /* 🔹 Corpo do card */
         .card-body {
             padding: 18px;
         }
 
+        /* 🔹 Estrutura geral do formulário */
         form {
             display: flex;
             flex-direction: column;
@@ -102,6 +113,7 @@
             margin-bottom: 4px;
         }
 
+        /* 🔹 Campos de entrada e seleção */
         input, select {
             padding: 10px;
             border-radius: 8px;
@@ -111,6 +123,7 @@
             box-sizing: border-box;
         }
 
+        /* 🔒 Estrutura dos campos de senha */
         .password-wrapper {
             display: flex;
             width: 100%;
@@ -121,6 +134,7 @@
                 flex: 1;
             }
 
+        /* 🔹 Botão de mostrar/ocultar senha */
         .toggle-btn {
             background: transparent;
             border: none;
@@ -130,6 +144,7 @@
             color: var(--text);
         }
 
+        /* 🔹 Botão principal de cadastro */
         .btn.primary {
             background: var(--accent);
             color: white;
@@ -142,6 +157,7 @@
             margin-top: 8px;
         }
 
+        /* 🔹 Rodapé e links de navegação */
         .signup, .card-footer {
             text-align: center;
             font-size: 13px;
@@ -157,34 +173,34 @@
                     text-decoration: underline;
                 }
 
+        /* 🔹 Mensagens de erro e sucesso */
         .form-message {
             margin-top: 8px;
             font-size: 13px;
-            color: #dc2626;
+            color: #dc2626; /* vermelho para erros */
         }
 
             .form-message.success {
-                color: #16a34a;
+                color: #16a34a; /* verde para sucesso */
             }
 
-        /* escape do media para Razor: use @@media */
+        /* 📱 Responsividade */
         @@media (max-width: 520px) {
-            .card
+            .card {
+                max-width: 92%;
+            }
 
-        {
-            max-width: 92%;
-        }
-
-        .brand h1 {
-            font-size: 20px;
-        }
-
+            .brand h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
+
 <body>
     <main class="signup-page">
         <div class="card">
+            <!-- 🔹 Cabeçalho com logotipo e nome -->
             <header class="card-header">
                 <div class="brand">
                     <div class="logo">🔧</div>
@@ -195,62 +211,78 @@
                 </div>
             </header>
 
+            <!-- 🔹 Corpo do card -->
             <section class="card-body">
+
+                <!-- ✅ Exibe mensagem de sucesso vinda do Controller -->
                 @if (TempData["Success"] != null)
                 {
                     <div class="form-message success">@TempData["Success"]</div>
                 }
+
+                <!-- ⚠️ Exibe erros de validação do ModelState -->
                 @if (ViewData.ModelState.ErrorCount > 0)
                 {
                     <div class="form-message">@Html.ValidationSummary()</div>
                 }
 
+                <!-- 🔹 Formulário de cadastro -->
                 <form asp-action="Index" method="post" novalidate>
-                    @Html.AntiForgeryToken()
-
+                    @Html.AntiForgeryToken() <!-- proteção contra ataques CSRF -->
+                    <!-- Campo nome -->
                     <label for="Nome">Nome</label>
                     <input asp-for="Nome" id="Nome" name="Nome" type="text" placeholder="Seu nome completo" required />
 
+                    <!-- Campo e-mail -->
                     <label for="Email">E-mail</label>
                     <input asp-for="Email" id="Email" name="Email" type="email" placeholder="seu@exemplo.com" required />
 
+                    <!-- Campo senha -->
                     <label for="Senha">Senha</label>
                     <div class="password-wrapper">
                         <input asp-for="Senha" id="Senha" name="Senha" type="password" placeholder="••••••••" required minlength="6" />
                         <button type="button" class="toggle-btn" id="togglePassword" aria-label="Mostrar senha">👁️</button>
                     </div>
 
+                    <!-- Campo confirmação de senha -->
                     <label for="confirmPassword">Confirmar Senha</label>
                     <div class="password-wrapper">
                         <input id="confirmPassword" name="confirmPassword" type="password" placeholder="••••••••" required minlength="6" />
                         <button type="button" class="toggle-btn" id="toggleConfirmPassword" aria-label="Mostrar senha">👁️</button>
                     </div>
 
+                    <!-- Tipo de usuário -->
                     <label for="Papel">Tipo de usuário</label>
                     <select asp-for="Papel" id="Papel" name="Papel" required>
                         <option value="colaborador">Colaborador / Cliente</option>
                         <option value="tecnico">Técnico</option>
                     </select>
 
+                    <!-- Botão principal -->
                     <button class="btn primary" type="submit">Cadastrar</button>
 
+                    <!-- Link para login -->
                     <div class="signup">
                         <span>Já tem uma conta?</span>
                         <a class="link" asp-controller="Login" asp-action="Index">Entrar</a>
                     </div>
 
+                    <!-- Área de mensagens dinâmicas -->
                     <div id="formMessage" role="status" class="form-message" aria-live="polite"></div>
                 </form>
             </section>
 
+            <!-- 🔹 Rodapé informativo -->
             <footer class="card-footer">
                 <small>Universidade • Projeto de Sistemas • LGPD aplicada</small>
             </footer>
         </div>
     </main>
 
+    <!-- 🔹 Script para mostrar/ocultar senhas e validar o formulário -->
     <script>
         (function(){
+          // Alterna a exibição da senha principal
           const togglePassword = document.getElementById('togglePassword');
           const passwordInput = document.getElementById('Senha');
           if(togglePassword && passwordInput){
@@ -259,6 +291,7 @@
             });
           }
 
+          // Alterna a exibição da confirmação de senha
           const toggleConfirm = document.getElementById('toggleConfirmPassword');
           const confirmInput = document.getElementById('confirmPassword');
           if(toggleConfirm && confirmInput){
@@ -267,6 +300,7 @@
             });
           }
 
+          // Validação: senhas devem coincidir
           const form = document.querySelector('form');
           const msgEl = document.getElementById('formMessage');
 
@@ -274,6 +308,8 @@
             form.addEventListener('submit', (e) => {
               const senha = document.getElementById('Senha')?.value || '';
               const confirm = document.getElementById('confirmPassword')?.value || '';
+
+              // Se as senhas forem diferentes, bloqueia o envio
               if(senha !== confirm){
                 e.preventDefault();
                 if(msgEl) msgEl.textContent = "As senhas não coincidem!";

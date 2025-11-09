@@ -1,155 +1,205 @@
 ﻿@{
+    // 🔹 Define o título da página e o layout compartilhado
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- 🔹 Título exibido na aba do navegador -->
     <title>SuporteTI IA — Login</title>
 
     <style>
+        /* 🎨 Paleta de cores principal da aplicação */
         :root {
-          --bg:#f6f8fb;
-          --card:#ffffff;
-          --header-bg:#2563eb;
-          --text:#111827;
-          --header-text:#ffffff;
-          --muted:#6b7280;
-          --accent:#2563eb;
+            --bg: #f6f8fb;
+            --card: #ffffff;
+            --header-bg: #2563eb;
+            --text: #111827;
+            --header-text: #ffffff;
+            --muted: #6b7280;
+            --accent: #2563eb;
         }
 
-        /* Reset e layout */
+        /* 🔹 Reset básico e estilo geral da página */
         body, html {
-          margin: 0;
-          padding: 0;
-          height: 100%;
-          font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-          background: var(--bg);
-          color: var(--text);
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+            background: var(--bg);
+            color: var(--text);
         }
 
+        /* 🔹 Centraliza o card de login na tela */
         .login-page {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
         }
 
+        /* 🔹 Estilo do card principal */
         .card {
-          background: var(--card);
-          border-radius: 12px;
-          box-shadow: 0 6px 18px rgba(16,24,40,0.06);
-          width: 100%;
-          max-width: 400px;
-          display: flex;
-          flex-direction: column;
-          gap: 18px;
-          overflow: hidden;
+            background: var(--card);
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            overflow: hidden;
         }
 
+        /* 🔹 Cabeçalho do card (título e logo) */
         .card-header {
-          background: var(--header-bg);
-          color: var(--header-text);
-          padding: 24px 18px;
-          text-align: center;
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 24px 18px;
+            text-align: center;
         }
+
+        /* 🔹 Logotipo do sistema (ícone e nome) */
         .brand .logo {
-          width: 44px; height: 44px; border-radius: 10px;
-          background: #1e40af;
-          display: inline-flex; align-items: center; justify-content: center;
-          color: white; font-weight: 700; font-size: 24px;
-          margin-bottom: 12px;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #1e40af;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 24px;
+            margin-bottom: 12px;
         }
-        .brand h1 { font-size: 28px; margin:0; }
-        .brand p { font-size: 14px; margin:4px 0 0 0; color: var(--header-text); }
 
+        .brand h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        .brand p {
+            font-size: 14px;
+            margin: 4px 0 0 0;
+            color: var(--header-text);
+        }
+
+        /* 🔹 Formulário de login */
         form {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-          padding: 18px;
-          width: 100%;
-          box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 18px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        label { font-size: 14px; margin-bottom: 4px; }
+        label {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
         input, select {
-          padding: 10px;
-          border-radius: 8px;
-          border: 1px solid #d1d5db;
-          font-size: 14px;
-          width: 100%;
-          box-sizing: border-box; /* garante que padding não quebre a largura */
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* Remover ícone interno do navegador no campo password */
-        input[type="password"]::-ms-reveal,
-        input[type="password"]::-ms-clear,
-        input[type="password"]::-webkit-contacts-auto-fill-button,
-        input[type="password"]::-webkit-password-toggle-button {
-          display: none !important;
-          -webkit-appearance: none;
-        }
+            /* 🔒 Remove ícones automáticos de senha em alguns navegadores */
+            input[type="password"]::-ms-reveal,
+            input[type="password"]::-ms-clear,
+            input[type="password"]::-webkit-contacts-auto-fill-button,
+            input[type="password"]::-webkit-password-toggle-button {
+                display: none !important;
+                -webkit-appearance: none;
+            }
 
+        /* 🔹 Estrutura do campo de senha com botão de mostrar/ocultar */
         .password-wrapper {
-          display: flex;
-          width: 100%;
-        }
-        .password-wrapper input { flex: 1; }
-        .password-wrapper button {
-          background: transparent; border: none;
-          cursor: pointer; font-size: 16px; padding: 0 6px;
-          color: var(--text);
+            display: flex;
+            width: 100%;
         }
 
+            .password-wrapper input {
+                flex: 1;
+            }
+
+            .password-wrapper button {
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+                padding: 0 6px;
+                color: var(--text);
+            }
+
+        /* 🔹 Linha com "Lembrar-me" e "Esqueci a senha" */
         .row.between {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
+        /* 🔹 Caixa de seleção Lembrar-me */
         .remember {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 14px;
-          color: var(--text);
-        }
-        .remember input[type="checkbox"] {
-          accent-color: var(--accent);
-          width: 16px;
-          height: 16px;
-          cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--text);
         }
 
+            .remember input[type="checkbox"] {
+                accent-color: var(--accent);
+                width: 16px;
+                height: 16px;
+                cursor: pointer;
+            }
+
+        /* 🔹 Botão principal de login */
         .btn.primary {
-          background: var(--accent);
-          color: white;
-          border: none;
-          border-radius: 12px;
-          padding: 10px 16px;
-          cursor: pointer;
-          font-weight: 600;
-          font-size: 14px;
-          margin-top: 8px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 8px;
         }
 
+        /* 🔹 Rodapé e link de cadastro */
         .signup, .card-footer {
-          text-align: center;
-          font-size: 13px;
-          color: var(--muted);
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
         }
-        .signup a, .link { color: var(--accent); text-decoration: none; }
-        .signup a:hover, .link:hover { text-decoration: underline; }
+
+            .signup a, .link {
+                color: var(--accent);
+                text-decoration: none;
+            }
+
+                .signup a:hover, .link:hover {
+                    text-decoration: underline;
+                }
     </style>
 </head>
+
 <body>
     <main class="login-page">
         <div class="card">
+            <!-- 🔹 Cabeçalho com logotipo e nome -->
             <header class="card-header">
                 <div class="brand">
                     <div class="logo">🔧</div>
@@ -160,23 +210,28 @@
                 </div>
             </header>
 
+            <!-- 🔹 Corpo do card contendo o formulário -->
             <section class="card-body">
                 <form id="loginForm" novalidate>
+                    <!-- Campo de e-mail -->
                     <label for="email">E-mail</label>
                     <input id="email" name="email" type="email" placeholder="seu@exemplo.com" required>
 
+                    <!-- Campo de senha com botão mostrar/ocultar -->
                     <label for="password">Senha</label>
                     <div class="password-wrapper">
                         <input id="password" name="password" type="password" placeholder="••••••••" required minlength="6" autocomplete="new-password">
                         <button type="button" id="togglePassword" aria-label="Mostrar senha">👁️</button>
                     </div>
 
+                    <!-- Seleção do tipo de usuário -->
                     <label for="role">Entrar como</label>
                     <select id="role" name="role" required>
                         <option value="colaborador">Colaborador / Cliente</option>
                         <option value="tecnico">Técnico</option>
                     </select>
 
+                    <!-- Lembrar-me + Esqueci a senha -->
                     <div class="row between">
                         <div class="remember">
                             <input id="remember" name="remember" type="checkbox">
@@ -185,27 +240,34 @@
                         <a class="link" href="recuperar-senha.html">Esqueci a senha</a>
                     </div>
 
+                    <!-- Botão de login -->
                     <button class="btn primary" type="submit">Entrar</button>
 
+                    <!-- Link para cadastro -->
                     <div class="signup">
                         <span>Não tem conta?</span>
                         <a class="link" href="cadastro.html">Cadastre-se</a>
                     </div>
 
+                    <!-- Mensagens de erro/sucesso -->
                     <div id="formMessage" role="status" class="form-message" aria-live="polite"></div>
                 </form>
             </section>
 
+            <!-- 🔹 Rodapé informativo -->
             <footer class="card-footer">
                 <small>Universidade • Projeto de Sistemas • LGPD aplicada</small>
             </footer>
         </div>
     </main>
 
+    <!-- 🔹 Script para alternar exibição da senha -->
     <script>
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
+
         togglePassword.addEventListener('click', () => {
+          // Alterna o tipo do campo entre "password" e "text"
           passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
         });
     </script>
